@@ -1,0 +1,27 @@
+Problems
+========
+- Add Hessian to LogisticRegression
+- Implement Least Squares, SVM
+
+Optimizers
+==========
+- Implement proximal based optimizer like FOBOS
+- Implement Nesterov's accelerated gradient
+
+Testing
+=======
+- Make harness for testing multiple problems on an optimizer
+
+Constraints
+===========
+- Add better support inequality constraints. There's gotta be something better
+  than a log barrier function.
+- add support for finding an initial solution
+- Add Hessian to LinearEquality
+
+General
+=======
+- added symbolic problem definitions
+- Implement some method to check convergence using duality gap
+- Implement some convergence criteria based on size of gradient
+- Add some ways to visually inspect convergence. Logging and plotting a must.
