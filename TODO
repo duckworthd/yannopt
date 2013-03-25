@@ -8,7 +8,6 @@ Optimizers
 - Implement proximal based optimizer like FOBOS
 - Implement Nesterov's accelerated gradient
 - Implement (L-)BFGS
-- Implement Newton's Method with Equality Constraints
 - Implement infeasible start Newton's method
 - Implement primal-dual interior point solver
 
@@ -21,7 +20,6 @@ Constraints
 - Add better support inequality constraints. There's gotta be something better
   than a log barrier function.
 - add support for finding an initial solution
-- Add Hessian to LinearEquality
 
 General
 =======

@@ -52,7 +52,8 @@ class LinearEqualityConstraint(Function):
     return null.T.dot(function.gradient(null.dot(x) + x_hat))
 
   def hessian(self, x):
-    raise NotImplementedError("TODO")
+    null, x_hat, function = self.null, self.x_hat, self.function
+    return null.T.dot(function.hessian(null.dot(x) + x_hat)).dot(null)
 
   def recover(self, z):
     null, x_hat, function = self.null, self.x_hat, self.function
