@@ -4,11 +4,23 @@ Functions for dealing with constraints
 import numpy as np
 from numpy import linalg
 
-from .base import Function
+from .base import Constraint, Function
 from .utils import null_space
 
 
-class LinearEquality(Function):
+class LinearEquality(Constraint):
+  """Represents a constraint of the form Ax = b"""
+
+  def __init__(self, A, b):
+    self.A = np.atleast_2d(A)
+    self.b = np.atleast_1d(b)
+
+  def is_satisfied(self, x):
+    A, b = self.A, self.b
+    return np.all(A.dot(x) == b)
+
+
+class LinearEqualityConstraint(Function):
   """Add linear constraints to an unconstrained objective
 
   Reduce a linear equality constrained problem in R^n to an unconstrained
@@ -16,11 +28,12 @@ class LinearEquality(Function):
   the linear constraints.
   """
 
-  def __init__(self, A, b, function):
-    self.A = np.atleast_2d(A)
-    self.b = np.atleast_1d(b)
+  def __init__(self, linear_constraint, function):
+    self.constraints = [linear_constraint]
     self.function = function
-    self.x_hat = linalg.solve(A, b)
+
+    A, b = linear_constraint.A, linear_constraint.b
+    self.x_hat = linalg.lstsq(A, b)[0]
     self.null = null_space(A)
 
   def objective(self, x):
@@ -35,7 +48,7 @@ class LinearEquality(Function):
     raise NotImplementedError("TODO")
 
 
-class Inequalities(Function):
+class GeneralInequalityConstraint(Function):
   """Add inequality constraints to a function.
 
   Uses the log-barrier trick to add smoothness near constraints.

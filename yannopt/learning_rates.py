@@ -29,11 +29,13 @@ class BacktrackingLineSearch(object):
     while True:
       new_score =  objective(x - t*direction)
       difference = self.a * gradient.dot(-direction)
+      assert difference <= 1e-12, "direction is not a direction of ascent!"
       if new_score < score + difference:
         return t
       elif t < self.t0:
         # TODO should throw an exception or something?
-        return t
+        print 'WARNING: backtracking line search failed'
+        return 0.0
       else:
         t *= self.b
 

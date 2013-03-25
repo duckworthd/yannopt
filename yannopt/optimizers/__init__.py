@@ -1,10 +1,3 @@
-from conjugate_gradient import ConjugateGradient
-from gradient_descent import GradientDescent
-from newtons_method import NewtonsMethod
-
-
-__all__ = [
-    'ConjugateGradient',
-    'GradientDescent',
-    'NewtonsMethod'
-]
+from conjugate_gradient import *
+from gradient_descent import *
+from newtons_method import *

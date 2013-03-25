@@ -25,3 +25,9 @@ class Function(object):
 
   def hessian(self, x):
     raise NotImplementedError("No objective function hessian implemented")
+
+
+class Constraint(object):
+
+  def is_satisfied(self, x):
+    raise NotImplementedError("Not implemented")

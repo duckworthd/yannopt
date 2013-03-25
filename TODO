@@ -7,6 +7,10 @@ Optimizers
 ==========
 - Implement proximal based optimizer like FOBOS
 - Implement Nesterov's accelerated gradient
+- Implement (L-)BFGS
+- Implement Newton's Method with Equality Constraints
+- Implement infeasible start Newton's method
+- Implement primal-dual interior point solver
 
 Testing
 =======
@@ -22,6 +26,7 @@ Constraints
 General
 =======
 - added symbolic problem definitions
+- add translation between single vector input and multiple arguments
 - Implement some method to check convergence using duality gap
 - Implement some convergence criteria based on size of gradient
 - Add some ways to visually inspect convergence. Logging and plotting a must.
