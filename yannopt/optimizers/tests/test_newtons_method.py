@@ -44,7 +44,7 @@ def test_qp_newtons_method():
                 [0.0, 1.0,  0.5]])
   b = np.array([0.2, 0.4])
   constraint = LinearEquality(A, b)
-  constrained = LinearEqualityConstraint(constraint, unconstrained)
+  constrained = LinearEqualityConstraint([constraint], unconstrained)
 
   optimizer = Optimizer2()
   solution = optimizer.optimize(constrained)
@@ -70,7 +70,7 @@ def test_linear_constrained_newtons_method():
                 [0.0, 1.0,  0.5]])
   b = np.array([0.2, 0.4])
   constraint = LinearEquality(A, b)
-  constrained = LinearEqualityConstraint(constraint, unconstrained)
+  constrained = LinearEqualityConstraint([constraint], unconstrained)
   x = np.linalg.lstsq(A, b)[0]
 
   optimizer = Optimizer3()

@@ -17,7 +17,13 @@ class LinearEquality(Constraint):
 
   def is_satisfied(self, x):
     A, b = self.A, self.b
-    return np.all(A.dot(x) == b)
+    return np.all(A.dot(x) - b <= 1e-12)
+
+  @staticmethod
+  def stack(constraints):
+    As = [c.A for c in constraints]
+    bs = [c.b for b in constraints]
+    return LinearEquality(np.vstack(As), np.hstack(bs))
 
 
 class LinearEqualityConstraint(Function):
@@ -28,11 +34,12 @@ class LinearEqualityConstraint(Function):
   the linear constraints.
   """
 
-  def __init__(self, linear_constraint, function):
-    self.constraints = [linear_constraint]
+  def __init__(self, constraints, function):
+    constraint = LinearEquality.stack(constraints)
+    self.constraints = [constraint]
     self.function = function
 
-    A, b = linear_constraint.A, linear_constraint.b
+    A, b = constraint.A, constraint.b
     self.x_hat = linalg.lstsq(A, b)[0]
     self.null = null_space(A)
 
@@ -46,6 +53,10 @@ class LinearEqualityConstraint(Function):
 
   def hessian(self, x):
     raise NotImplementedError("TODO")
+
+  def recover(self, z):
+    null, x_hat, function = self.null, self.x_hat, self.function
+    return null.dot(z) + x_hat
 
 
 class GeneralInequalityConstraint(Function):

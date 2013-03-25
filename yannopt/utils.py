@@ -9,7 +9,9 @@ from numpy import linalg
 def null_space(A, eps=1e-15):
   """Find V such that AVx = 0 for all x"""
   _, s, Vh = linalg.svd(A)
-  mask = s < eps
+  s2 = np.zeros(Vh.shape[0])
+  s2[0:len(s)] = s
+  mask = s2 < eps
   null = Vh[mask,:]
   return null.T
 
