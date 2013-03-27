@@ -5,12 +5,11 @@
 from ..base import Optimizer
 
 
-class GradientDescent(Optimizer):
+class SubgradientDescent(Optimizer):
 
-  def optimize(self, objective, objective_gradient, x0):
+  def optimize(self, objective, x0):
     kwargs = {
         'objective': objective,
-        'objective_gradient': objective_gradient,
     }
     iteration = 0
     x = x0
@@ -19,10 +18,10 @@ class GradientDescent(Optimizer):
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
         break
       else:
-        direction = objective_gradient(x)
+        direction = -1 * objective.gradient(x)
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
-        x  -= eta * direction
+        x  += eta * direction
         iteration += 1
 
     return x

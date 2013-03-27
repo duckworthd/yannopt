@@ -8,13 +8,11 @@ from ..base import Optimizer
 
 
 class NewtonsMethod(Optimizer):
-  """Vanilla Implementation of Newton's 2nd order optimizer"""
+  """Vanilla Implementation of Newton's 2nd order optimizer for unconstrained problems"""
 
-  def optimize(self, objective, objective_gradient, objective_hessian, x0):
+  def optimize(self, objective, x0):
     kwargs = {
         'objective': objective,
-        'objective_gradient': objective_gradient,
-        'objective_hessian': objective_hessian
     }
     iteration = 0
     x = x0
@@ -29,13 +27,13 @@ class NewtonsMethod(Optimizer):
         #
         # where g = gradient[f](x)
         #       H =  hessian[f](x)
-        H = objective_hessian(x)
-        g = objective_gradient(x)
-        direction = np.linalg.lstsq(H, g)[0]
+        H = objective.hessian(x)
+        g = objective.gradient(x)
+        direction = -1 * np.linalg.lstsq(H, g)[0]
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
 
-        x  -= eta * direction
+        x  += eta * direction
 
         iteration += 1
 
@@ -95,9 +93,7 @@ class LinearConstrainedNewtonsMethod(Optimizer):
     A, b = objective.constraints[0].A, objective.constraints[0].b
     objective = objective.function
     kwargs = {
-        'objective': objective.objective,
-        'objective_gradient': objective.gradient,
-        'objective_hessian': objective.hessian
+        'objective': objective,
     }
     iteration = 0
     x = x0
@@ -131,13 +127,13 @@ class LinearConstrainedNewtonsMethod(Optimizer):
 
         r = np.hstack([-g, np.zeros(b.shape)])
         y = np.linalg.lstsq(M, r)[0]
-        direction = -1 * y[0:n_x]
+        direction = y[0:n_x]
 
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
 
         print objective.objective(x)
-        x  -= eta * direction
+        x  += eta * direction
 
         iteration += 1
 

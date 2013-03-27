@@ -5,7 +5,7 @@ from yannopt.optimizers import NewtonsMethod, QPNewtonsMethod, LinearConstrained
 from yannopt.constraints import LinearEquality, LinearEqualityConstraint
 from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
-from yannopt.loss_functions import QuadraticProgram
+from yannopt.functions import QuadraticProgram
 
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, NewtonsMethod):
@@ -24,7 +24,7 @@ def test_newtons_method():
   qp = QuadraticProgram(A, b)
   optimizer = Optimizer()
 
-  solution = optimizer.optimize(qp.objective, qp.gradient, qp.hessian, x0)
+  solution = optimizer.optimize(qp, x0)
   assert_allclose(solution, qp.solution(), atol=1e-5)
 
 

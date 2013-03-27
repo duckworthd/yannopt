@@ -9,10 +9,9 @@ from ..base import Optimizer
 
 class ConjugateGradient(Optimizer):
 
-  def optimize(self, objective, objective_gradient, x0):
+  def optimize(self, objective, x0):
     kwargs = {
         'objective': objective,
-        'objective_gradient': objective_gradient,
     }
     iteration = 0
     x = x0
@@ -28,16 +27,16 @@ class ConjugateGradient(Optimizer):
           previous_direction = 0
           previous_gradient  = 0
 
-        gradient = objective_gradient(x)
+        gradient = objective.gradient(x)
         if not (np.all(previous_gradient == 0) or np.all(gradient == 0)):
           b = gradient.dot(gradient) / (gradient.dot(previous_gradient))
         else:
           b = 1.0
-        direction = gradient + b * previous_direction
+        direction = -1 * (gradient + b * previous_direction)
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
 
-        x  -= eta * direction
+        x  += eta * direction
 
         iteration += 1
         previous_direction = direction

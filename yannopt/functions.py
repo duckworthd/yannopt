@@ -33,6 +33,9 @@ class LogisticRegression(Function):
     y_hat = 1.0 / (1 + np.exp(-1 * X.dot(x)))
     return np.sum(y - y_hat) * x
 
+  def hessian(self, x):
+    raise NotImplementedError("TODO")
+
 
 class QuadraticProgram(Function):
   """An unconstrained Quadratic Program
@@ -63,3 +66,20 @@ class QuadraticProgram(Function):
   def solution(self):
     A, b = self.A, self.b
     return np.linalg.solve(A, -b)
+
+
+class ConstantFunction(Function):
+
+  def __init__(self, c):
+    self.c = c
+
+  def objective(self, x):
+    return self.c
+
+  def gradient(self, x):
+    n = x.shape[0]
+    return np.zeros(n)
+
+  def hessian(self, x):
+    n = x.shape[0]
+    return np.zeros((n,n))

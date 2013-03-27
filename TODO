@@ -5,11 +5,17 @@ Problems
 
 Optimizers
 ==========
+- implement steepest descent method
 - Implement proximal based optimizer like FOBOS
 - Implement Nesterov's accelerated gradient
 - Implement (L-)BFGS
 - Implement infeasible start Newton's method
 - Implement primal-dual interior point solver
+- implement primal-dual subgradient descent
+- implement ellipsoid method
+- implement ADMM
+- implement Polyak step size
+- implement projection onto linear constraints
 
 Testing
 =======
@@ -20,11 +26,31 @@ Constraints
 - Add better support inequality constraints. There's gotta be something better
   than a log barrier function.
 - add support for finding an initial solution
+- redesign how linear constraints are removed and the barrier method is added
 
 General
 =======
 - added symbolic problem definitions
-- add translation between single vector input and multiple arguments
 - Implement some method to check convergence using duality gap
+- Implement stopping criterion for Newton's method
 - Implement some convergence criteria based on size of gradient
 - Add some ways to visually inspect convergence. Logging and plotting a must.
+- implement the following interface
+
+  minimize(<expr>)
+    .subject_to(<expr>)
+    .subject_to(<expr>)
+    .using(<algorithm>)
+
+  where <algorithm> is initialized with all algorithm-specific parameters
+- implement the following problem interface
+
+  class Problem:
+    objective
+    inequalities
+    equality
+
+  then change interface for all optimizers, stopping criteria, step sizes to match
+
+- implement Lagrangian from problem definition
+- change 'direction' argument to be the direction of descent, not ascent

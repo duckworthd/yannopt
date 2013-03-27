@@ -1,6 +1,8 @@
 """
-Stopping criterion for Gradient-based methods
+Stopping criterion
 """
+
+import numpy as np
 
 
 class MaxIterations(object):
@@ -10,3 +12,13 @@ class MaxIterations(object):
 
   def stopping_criterion(self, iteration, **kwargs):
     return iteration >= self.n
+
+
+class EllipsoidCriterion(object):
+
+  def __init__(self, epsilon):
+    self.epsilon = epsilon
+
+  def stopping_criterion(self, P, x, objective, **kwargs):
+    g = objective.gradient(x)
+    return np.sqrt(g.dot(P).dot(g)) <= self.epsilon
