@@ -23,10 +23,10 @@ class BacktrackingLineSearch(object):
 
   def learning_rate(self, x, direction, objective, **kwargs):
     t = 1.0
-    score = objective.objective(x)
+    score = objective(x)
     gradient = objective.gradient(x)
     while True:
-      new_score =  objective.objective(x + t*direction)
+      new_score =  objective(x + t*direction)
       difference = self.a * gradient.dot(direction)
       assert difference <= 1e-12, "direction is not a direction of ascent!"
       if new_score < score + difference:

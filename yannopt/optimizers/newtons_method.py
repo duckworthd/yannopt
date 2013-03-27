@@ -5,6 +5,7 @@ Newton's Method
 import numpy as np
 
 from ..base import Optimizer
+from ..constraints.base import is_linear
 
 
 class NewtonsMethod(Optimizer):
@@ -48,14 +49,14 @@ class QPNewtonsMethod(Optimizer):
   """
 
   def optimize(self, objective, x0=None):
-    try:
+    if not is_linear(objective.equality_constraint):
       ### UNCONSTRAINED ###
       # use the KKT condition on the gradient of the Lagrangian = 0
       # (implies Qx + c = 0
-      Q, c = objective.A, objective.b
+      Q, c = objective.objective.A, objective.objective.b
       x = np.linalg.solve(Q, -c)
       return x
-    except:
+    else:
       ### CONSTRAINED ###
       # Use the same KKT condition, but on a bigger problem.
       #
@@ -63,9 +64,10 @@ class QPNewtonsMethod(Optimizer):
       # [ A 0  ] [ v ] = [ b ]
       #
       # where v is the Lagrange multiplier for Ax = b
-      assert len(objective.constraints) == 1, "Only one equality constraint allowed"
-      Q, c = objective.function.A, objective.function.b
-      A, b = objective.constraints[0].A, objective.constraints[0].b
+      assert (len(objective.inequality_constraints) == 1,
+          "Only one equality constraint allowed")
+      Q, c = objective.objective.A, objective.objective.b
+      A, b = objective.equality_constraint.A, objective.equality_constraint.b
 
       n_v, n_x = A.shape
 
@@ -90,8 +92,9 @@ class LinearConstrainedNewtonsMethod(Optimizer):
   """
 
   def optimize(self, objective, x0):
-    A, b = objective.constraints[0].A, objective.constraints[0].b
-    objective = objective.function
+    assert len(objective.inequality_constraints) == 0, "This method cannot handle inequality constraints"
+    A, b = objective.equality_constraint.A, objective.equality_constraint.b
+    objective = objective.objective
     kwargs = {
         'objective': objective,
     }
@@ -132,7 +135,6 @@ class LinearConstrainedNewtonsMethod(Optimizer):
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
 
-        print objective.objective(x)
         x  += eta * direction
 
         iteration += 1

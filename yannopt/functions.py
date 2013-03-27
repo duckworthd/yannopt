@@ -23,7 +23,7 @@ class LogisticRegression(Function):
     self.X = np.atleast_2d(X)
     self.y = np.atleast_1d(y)
 
-  def objective(self, x):
+  def eval(self, x):
     X, y = self.X, self.y
     loss = np.log(1 + np.exp(-y * X.dot(x)))
     return np.sum(loss)
@@ -37,7 +37,7 @@ class LogisticRegression(Function):
     raise NotImplementedError("TODO")
 
 
-class QuadraticProgram(Function):
+class Quadratic(Function):
   """An unconstrained Quadratic Program
 
   min_{x} 0.5 x'Ax + b'x
@@ -52,7 +52,7 @@ class QuadraticProgram(Function):
     self.A = np.asarray(A)
     self.b = np.asarray(b)
 
-  def objective(self, x):
+  def eval(self, x):
     A, b = self.A, self.b
     return 0.5 * x.dot(A).dot(x) + b.dot(x)
 
@@ -68,12 +68,12 @@ class QuadraticProgram(Function):
     return np.linalg.solve(A, -b)
 
 
-class ConstantFunction(Function):
+class Constant(Function):
 
   def __init__(self, c):
     self.c = c
 
-  def objective(self, x):
+  def eval(self, x):
     return self.c
 
   def gradient(self, x):

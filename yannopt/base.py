@@ -19,17 +19,20 @@ class Optimizer(object):
 
 class Function(object):
 
-  def objective(self, x):
-    raise NotImplementedError("No objective function implemented")
+  def eval(self, x):
+    raise NotImplementedError("Function evaluation not implemented")
 
   def gradient(self, x):
-    raise NotImplementedError("No objective function gradient implemented")
+    raise NotImplementedError("Function gradient not implemented")
 
   def hessian(self, x):
-    raise NotImplementedError("No objective function hessian implemented")
+    raise NotImplementedError("Function hessian not implemented")
+
+  def __call__(self, x):
+    return self.eval(x)
 
 
 class Constraint(object):
 
   def is_satisfied(self, x):
-    raise NotImplementedError("Not implemented")
+    raise NotImplementedError("Constraint satisfaction not implemented")
