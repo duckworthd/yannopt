@@ -5,7 +5,7 @@ from yannopt.optimizers import SubgradientDescent
 from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
 from yannopt.functions import Quadratic
-from yannopt.problem import Problem
+from yannopt.problem import minimize
 
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, SubgradientDescent):
@@ -22,7 +22,7 @@ def test_gradient_descent():
   b = [1.0, 2.0, 3.0]
   x0 = np.zeros(3)
   qp = Quadratic(A, b)
-  problem = Problem(qp)
+  problem = minimize(qp)
 
   optimizer = Optimizer()
 

@@ -10,18 +10,31 @@ def is_linear(constraint):
 class LinearEquality(Constraint):
   """Represents a constraint of the form Ax=b"""
 
-  def __init__(self, A, b):
-    self.A = np.atleast_2d(A)
-    self.b = np.atleast_1d(b)
+  def __init__(self, A=None, b=None):
+    if A is None and b is None:
+      self.A = None
+      self.b = None
+    else:
+      self.A = np.atleast_2d(A)
+      self.b = np.atleast_1d(b)
 
   def is_satisfied(self, x):
     A, b = self.A, self.b
-    return np.all(A.dot(x) - b <= 1e-12)
+    if A is None and b is None:
+      return True
+    else:
+      return np.all(A.dot(x) - b <= 1e-12)
+
+  def also(self, constraint):
+    """Stack this linear equality and one more"""
+    return LinearEquality.stack([self, constraint])
 
   @staticmethod
   def stack(constraints):
-    As = [c.A for c in constraints]
-    bs = [c.b for b in constraints]
+    """Stack multiple linear equalities"""
+    params = [(c.A, c.b) for c in constraints
+              if not (c.A is None or c.b is None)]
+    As, bs = zip(*params)
     return LinearEquality(np.vstack(As), np.hstack(bs))
 
 

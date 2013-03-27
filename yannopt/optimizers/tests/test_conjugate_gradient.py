@@ -7,7 +7,7 @@ from yannopt.optimizers import ConjugateGradient
 from yannopt.learning_rates import DecreasingRate
 from yannopt.stopping_criteria import MaxIterations
 from yannopt.functions import Quadratic
-from yannopt.problem import Problem
+from yannopt.problem import minimize
 
 
 class Optimizer(DecreasingRate, MaxIterations, ConjugateGradient):
@@ -27,7 +27,7 @@ def test_conjugate_gradient():
   qp = Quadratic(A, b)
   optimizer = Optimizer()
 
-  solution = optimizer.optimize(Problem(qp), x0)
+  solution = optimizer.optimize(minimize(qp), x0)
   assert_allclose(solution, qp.solution(), atol=1e-2)
 
 
@@ -44,7 +44,7 @@ def test_conjugate_gradient2():
   b = np.array([0.2, 0.4])
   constraint = LinearEquality(A, b)
 
-  problem = Problem(qp, equality_constraint=constraint)
+  problem = minimize(qp).subject_to(constraint)
   problem = equality_elimination(problem)
   x0 = np.zeros(1)
 

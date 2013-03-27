@@ -3,11 +3,10 @@ from numpy.testing import assert_allclose
 
 from yannopt.optimizers import NewtonsMethod, QPNewtonsMethod, LinearConstrainedNewtonsMethod
 from yannopt.constraints.base import LinearEquality
-from yannopt.constraints.elimination import equality_elimination
 from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
 from yannopt.functions import Quadratic
-from yannopt.problem import Problem
+from yannopt.problem import minimize
 
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, NewtonsMethod):
@@ -24,7 +23,7 @@ def test_newtons_method():
   b = [1.0, 2.0, 3.0]
   x0 = np.zeros(3)
   objective = Quadratic(A, b)
-  problem = Problem(objective)
+  problem = minimize(objective)
 
   optimizer = Optimizer()
 
@@ -49,7 +48,7 @@ def test_qp_newtons_method():
   b = np.array([0.2, 0.4])
   constraint = LinearEquality(A, b)
 
-  problem = Problem(objective, equality_constraint=constraint)
+  problem = minimize(objective).subject_to(constraint)
 
   optimizer = Optimizer2()
   solution = optimizer.optimize(problem)
@@ -76,7 +75,7 @@ def test_linear_constrained_newtons_method():
   b = np.array([0.2, 0.4])
   constraint = LinearEquality(A, b)
 
-  problem = Problem(objective, equality_constraint=constraint)
+  problem = minimize(objective).subject_to(constraint)
 
   x = np.linalg.lstsq(A, b)[0]
 

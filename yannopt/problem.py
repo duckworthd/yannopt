@@ -1,13 +1,14 @@
 
 import numpy as np
 
-from .constraints.base import is_linear, Null
+from .constraints.base import is_linear, LinearEquality
 from .base import Function
 
 
 class Problem(Function):
 
-  def __init__(self, objective, inequality_constraints=[], equality_constraint=Null()):
+  def __init__(self, objective, inequality_constraints=[],
+               equality_constraint=LinearEquality()):
     self._objective = objective
     self._inequality_constraints = inequality_constraints
     self._equality_constraint = equality_constraint
@@ -29,8 +30,8 @@ class Problem(Function):
 
   def subject_to(self, constraint):
     if is_linear(constraint):
-      # combine current equality constraint and this new one
-      raise NotImplementedError("TODO")
+      # stack equality constraints
+      self._equality_constraint = self._equality_constraint.also(constraint)
     else:
       self._inequality_constraints.append(constraint)
     return self
