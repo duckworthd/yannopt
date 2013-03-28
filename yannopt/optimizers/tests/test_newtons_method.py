@@ -1,12 +1,9 @@
-import numpy as np
 from numpy.testing import assert_allclose
 
 from yannopt.optimizers import NewtonsMethod, QPNewtonsMethod, LinearConstrainedNewtonsMethod
-from yannopt.constraints.base import LinearEquality
 from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
-from yannopt.functions import Quadratic
-from yannopt.problem import minimize
+from yannopt.tests import problems
 
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, NewtonsMethod):
@@ -16,44 +13,9 @@ class Optimizer(BacktrackingLineSearch, MaxIterations, NewtonsMethod):
     NewtonsMethod.__init__(self)
 
 
-def test_newtons_method():
-  A = np.array([[1.0, 0.5, 0.0],
-                [0.5, 1.0, 0.5],
-                [0.0, 0.5, 1.0]])
-  b = [1.0, 2.0, 3.0]
-  x0 = np.zeros(3)
-  objective = Quadratic(A, b)
-  problem = minimize(objective)
-
-  optimizer = Optimizer()
-
-  solution = optimizer.optimize(problem, x0)
-  assert_allclose(solution, objective.solution(), atol=1e-5)
-
-
 class Optimizer2(QPNewtonsMethod):
   def __init__(self):
     QPNewtonsMethod.__init__(self)
-
-
-def test_qp_newtons_method():
-  Q = np.array([[1.0, 0.5, 0.0],
-                [0.5, 1.0, 0.5],
-                [0.0, 0.5, 1.0]])
-  c = [1.0, 2.0, 3.0]
-  objective = Quadratic(Q, c)
-
-  A = np.array([[1.0, 0.0, -1.0],
-                [0.0, 1.0,  0.5]])
-  b = np.array([0.2, 0.4])
-  constraint = LinearEquality(A, b)
-
-  problem = minimize(objective).subject_to(constraint)
-
-  optimizer = Optimizer2()
-  solution = optimizer.optimize(problem)
-  x_star = np.array([-2.48,  1.74, -2.68])
-  assert_allclose(solution, x_star, atol=1e-5)
 
 
 class Optimizer3(BacktrackingLineSearch, MaxIterations, LinearConstrainedNewtonsMethod):
@@ -63,23 +25,25 @@ class Optimizer3(BacktrackingLineSearch, MaxIterations, LinearConstrainedNewtons
     NewtonsMethod.__init__(self)
 
 
+def test_newtons_method():
+  optimizer = Optimizer()
+  solution  = problems.quadratic_program1()
+
+  x = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(x, solution.x, atol=1e-5)
+
+
+def test_qp_newtons_method():
+  optimizer = Optimizer2()
+  solution  = problems.quadratic_program2()
+
+  x = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(x, solution.x, atol=1e-5)
+
+
 def test_linear_constrained_newtons_method():
-  Q = np.array([[1.0, 0.5, 0.0],
-                [0.5, 1.0, 0.5],
-                [0.0, 0.5, 1.0]])
-  c = [1.0, 2.0, 3.0]
-  objective = Quadratic(Q, c)
-
-  A = np.array([[1.0, 0.0, -1.0],
-                [0.0, 1.0,  0.5]])
-  b = np.array([0.2, 0.4])
-  constraint = LinearEquality(A, b)
-
-  problem = minimize(objective).subject_to(constraint)
-
-  x = np.linalg.lstsq(A, b)[0]
-
   optimizer = Optimizer3()
-  solution = optimizer.optimize(problem, x)
-  x_star = np.array([-2.48,  1.74, -2.68])
-  assert_allclose(solution, x_star, atol=1e-5)
+  solution  = problems.quadratic_program2()
+
+  x = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(x, solution.x, atol=1e-2)

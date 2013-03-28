@@ -1,11 +1,9 @@
-import numpy as np
 from numpy.testing import assert_allclose
 
 from yannopt.optimizers import SubgradientDescent
 from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
-from yannopt.functions import Quadratic
-from yannopt.problem import minimize
+from yannopt.tests import problems
 
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, SubgradientDescent):
@@ -16,15 +14,8 @@ class Optimizer(BacktrackingLineSearch, MaxIterations, SubgradientDescent):
 
 
 def test_gradient_descent():
-  A = np.array([[1.0, 0.5, 0.0],
-                [0.5, 1.0, 0.5],
-                [0.0, 0.5, 1.0]])
-  b = [1.0, 2.0, 3.0]
-  x0 = np.zeros(3)
-  qp = Quadratic(A, b)
-  problem = minimize(qp)
-
   optimizer = Optimizer()
+  solution  = problems.quadratic_program1()
 
-  solution = optimizer.optimize(problem, x0)
-  assert_allclose(solution, qp.solution(), atol=1e-5)
+  x = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(x, solution.x, atol=1e-5)
