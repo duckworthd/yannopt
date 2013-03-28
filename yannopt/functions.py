@@ -28,7 +28,7 @@ class LogisticRegression(Function):
   X : [n_samples, n_features] array-like
       feature matrix
   y : [n_samples] array-like
-      labels for each sample. Must be in {-1, 1}
+      labels for each sample. Must be in {0, 1}
   """
 
   def __init__(self, X, y):
@@ -37,16 +37,26 @@ class LogisticRegression(Function):
 
   def eval(self, x):
     X, y = self.X, self.y
+    y = 2 * y - 1
     loss = np.log(1 + np.exp(-y * X.dot(x)))
     return np.sum(loss)
 
   def gradient(self, x):
+    # gradient[f](w) = \sum_{i} (y_i - P(y=1|x;w)) x_i
     X, y = self.X, self.y
     y_hat = 1.0 / (1 + np.exp(-1 * X.dot(x)))
-    return np.sum(y - y_hat) * x
+    return np.sum((y - y_hat)[:, np.newaxis] * X, axis=0)
 
   def hessian(self, x):
-    raise NotImplementedError("TODO")
+    # hessian[f](w) = \sum_{i} P(y=1|x;w) P(y=0|x;w) x_i x_i'
+    n = len(x)
+    X, y = self.X, self.y
+
+    result = np.zeros((n, n))
+    y_hat = 1.0 / (1 + np.exp(-1 * X.dot(x)))
+    for (i, y_pred) in enumerate(y_hat):
+      result += y_pred * (1.0 - y_pred) * np.outer(X[i], X[i])
+    return result
 
 
 class Quadratic(Function):
