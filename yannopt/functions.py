@@ -6,8 +6,20 @@ import numpy as np
 from .base import Function
 
 
+################################## Interfaces ##################################
+class Prox(Function):
+  """A function that implements the prox operator
+
+    prox_{eta}(x) = min_{y} f(y) + (1/2 eta) ||y-x||_2^2
+  """
+
+  def prox(x, eta):
+    raise NotImplementedError("Prox function not implemented")
+
+
+################################## Classes #####################################
 class LogisticRegression(Function):
-  """Logistic Regression problem
+  """Logistic Regression loss function
 
   min_{w} \sum_{i} log(1 + exp(-y_i x_i' w))
 
@@ -38,23 +50,25 @@ class LogisticRegression(Function):
 
 
 class Quadratic(Function):
-  """An unconstrained Quadratic Program
+  """Quadratic function
 
-  min_{x} 0.5 x'Ax + b'x
+  min_{x} 0.5 x'Ax + b'x + c
 
   Parameters
   ----------
   A : [n, n] array-like
   b : [n] array-like
+  c : [1] array-like
   """
 
-  def __init__(self, A, b):
+  def __init__(self, A, b, c=0.0):
     self.A = np.asarray(A)
     self.b = np.asarray(b)
+    self.c = np.asarray(c)
 
   def eval(self, x):
-    A, b = self.A, self.b
-    return 0.5 * x.dot(A).dot(x) + b.dot(x)
+    A, b, c = self.A, self.b, self.c
+    return 0.5 * x.dot(A).dot(x) + b.dot(x) + c
 
   def gradient(self, x):
     A, b = self.A, self.b
@@ -83,3 +97,43 @@ class Constant(Function):
   def hessian(self, x):
     n = x.shape[0]
     return np.zeros((n,n))
+
+
+class Separable(Function):
+  """A separable function
+
+  Function of the form,
+
+      f(x) = \sum_{i} f_{i}(x)
+  """
+
+  def __init__(self, functions):
+    self.functions = functions
+
+  def eval(self, x):
+    evals = [f(x) for f in self.functions]
+    return np.sum(evals)
+
+  def gradient(self, x):
+    gradients = [f.gradient(x) for f in self.functions]
+    return np.sum(gradients)
+
+  def hessian(self, x):
+    hessians = [f.gradient(x) for f in self.functions]
+    return np.sum(hessians)
+
+
+################################## Functions ###################################
+def quadratic_approx(f, x):
+  """Compute quadratic approximation to a smooth function
+
+    f(y) ~~ f(x) + g'(y-x) + (1/2 lmbda)(y-x)'H(y-x)
+
+  where g = gradient[f](x)
+        H =  hessian[f](x)
+  """
+  c = f(x)
+  g = f.gradient(x)
+  H = f.hessian(x)
+
+  return Quadratic(H, g, c)

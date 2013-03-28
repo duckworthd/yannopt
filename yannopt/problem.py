@@ -5,7 +5,26 @@ from .constraints.base import is_linear, LinearEquality
 from .base import Function
 
 
+def minimize(function):
+  """Create a problem
+
+  Parameters
+  ----------
+  problem : Function
+      objective function to be minimized
+  """
+  return Problem(function)
+
+
 class Problem(Function):
+  """An optimization problem
+
+  An optimization problem of the form
+
+    min_{x} f_{0}(x)
+    s.t.    f_{i)(x) <= 0
+            Ax = b
+  """
 
   def __init__(self, objective, inequality_constraints=[],
                equality_constraint=LinearEquality()):
@@ -49,5 +68,14 @@ class Problem(Function):
     return self._equality_constraint
 
 
-def minimize(function):
-  return Problem(function)
+class Solution(object):
+  """Solution to an optimization problem"""
+
+  def __init__(self, x=None, v=None, problem=None, x0=None, v0=None,
+               duality_gap=None):
+    self.x = x
+    self.v = v
+    self.problem = problem
+    self.x0 = x0
+    self.v0 = v0
+    self.duality_gap = duality_gap

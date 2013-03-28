@@ -48,3 +48,25 @@ class AdaptiveGradient(object):
   def learning_rate(self, x, direction, **kwargs):
     self.weights += direction ** 2
     return self.multiplier / np.sqrt(self.weights)
+
+
+class ProximalBacktrackingLineSearch(object):
+  """Backtracking search for Proximal methods"""
+  def __init__(self, b=0.9):
+    self.b = b
+
+  def learning_rate(self, x, direction, prox_function, **kwargs):
+    t = 1.0
+    f = prox_function
+
+    # make quadratic approximation to f at x while scaling the quadratic term
+    # down by (1/l)
+    c = f(x)
+    g = f.gradient(x)
+    f2 = lambda y, l: c + g.dot(y-x) + (0.5 / l) * (np.linalg.norm(y-x) ** 2)
+
+    while True:
+      z = f.prox(x + t * direction, t)
+      if f(z) <= f2(z, t):
+        return t
+      t = self.b * t
