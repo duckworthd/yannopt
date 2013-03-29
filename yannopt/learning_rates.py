@@ -16,20 +16,28 @@ class DecreasingRate(object):
 
 
 class BacktrackingLineSearch(object):
-  def __init__(self, a=0.1, b=0.9, t0=1e-12):
+  def __init__(self, a=0.1, b=0.9, t0=1e-12, save_step_size=False):
     self.a = a
     self.b = b
     self.t0 = t0
+    self.t = 1.0
+    self.save_step_size = save_step_size
 
   def learning_rate(self, x, direction, objective, **kwargs):
-    t = 1.0
+    if self.save_step_size:
+      t = self.t
+    else:
+      t = 1.0
+
     score = objective(x)
     gradient = objective.gradient(x)
     while True:
       new_score =  objective(x + t*direction)
-      difference = self.a * gradient.dot(direction)
-      assert difference <= 1e-12, "direction is not a direction of ascent!"
+      difference = self.a * t * gradient.dot(direction)
+      assert difference <= 1e-12, "direction is not a direction of descent!"
       if new_score < score + difference:
+        if self.save_step_size:
+          self.t = t
         return t
       elif t < self.t0:
         # TODO should throw an exception or something?
@@ -52,21 +60,27 @@ class AdaptiveGradient(object):
 
 class ProximalBacktrackingLineSearch(object):
   """Backtracking search for Proximal methods"""
-  def __init__(self, b=0.9):
+  def __init__(self, b=0.9, save_step_size=False):
     self.b = b
+    self.t = 1.0
+    self.save_step_size = save_step_size
 
-  def learning_rate(self, x, direction, prox_function, **kwargs):
-    t = 1.0
-    f = prox_function
+  def learning_rate(self, x, direction, grad_function, prox_function, **kwargs):
+    if self.save_step_size:
+      t = self.t
+    else:
+      t = 1.0
 
-    # make quadratic approximation to f at x while scaling the quadratic term
-    # down by (1/l)
-    c = f(x)
-    g = f.gradient(x)
-    f2 = lambda y, l: c + g.dot(y-x) + (0.5 / l) * (np.linalg.norm(y-x) ** 2)
+    # make quadratic approximation to the differentiable function  at x while
+    # scaling the quadratic term down until 1/l >= its Lipschitz constant
+    c = grad_function(x)
+    g = grad_function.gradient(x)
+    grad_function2 = lambda y, l: c + g.dot(y-x) + (0.5 / l) * (np.linalg.norm(y-x) ** 2)
 
     while True:
-      z = f.prox(x + t * direction, t)
-      if f(z) <= f2(z, t):
+      z = prox_function.prox(x + t * direction, t)
+      if grad_function(z) <= grad_function2(z, t):
+        if self.save_step_size:
+          self.t = t
         return t
       t = self.b * t

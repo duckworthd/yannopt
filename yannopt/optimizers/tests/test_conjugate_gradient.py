@@ -20,8 +20,8 @@ def test_conjugate_gradient():
   optimizer = Optimizer()
   solution  = problems.quadratic_program1()
 
-  x = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(x, solution.x, atol=1e-2)
+  solution2 = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(solution2.x, solution.x, atol=1e-2)
 
 
 def test_conjugate_gradient2():
@@ -31,7 +31,7 @@ def test_conjugate_gradient2():
 
   optimizer = Optimizer()
 
-  z = optimizer.optimize(problem, np.zeros(1))
-  x = problem.objective.recover(z)
+  solution2 = optimizer.optimize(problem, np.zeros(1))
+  x = problem.objective.recover(solution2.x)
 
   assert_allclose(x, solution.x, atol=1e-5)

@@ -17,5 +17,5 @@ def test_ellipsoid_method():
   solution  = problems.quadratic_program1()
   optimizer = Optimizer()
 
-  x = optimizer.optimize(solution.problem, P0, solution.x0)
-  assert_allclose(x, solution.x, atol=1e-2)
+  solution2 = optimizer.optimize(solution.problem, P0, solution.x0)
+  assert_allclose(solution2.x, solution.x, atol=1e-2)

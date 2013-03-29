@@ -1,8 +1,9 @@
 """
-Conjugate Gradient Descent
+Proximal Gradient Descent
 """
 
 from ..base import Optimizer
+from ..problem import Solution
 
 
 class ProximalGradient(Optimizer):
@@ -44,13 +45,15 @@ class ProximalGradient(Optimizer):
         # x^{k+1} = prox_{eta^{k} g}( x^{k} - eta^{k} gradient[f](x^{k}) )
         direction = -1 * f.gradient(x)
         eta = self.learning_rate(iteration=iteration, x=x,
-            direction=direction, prox_function=g, **kwargs)
+            direction=direction, grad_function=f, prox_function=g, **kwargs)
 
         x = g.prox(x + eta * direction, eta)
 
         iteration += 1
 
-    return x
+        #print '%d | %f' % (iteration, objective(x))
+
+    return Solution(x=x)
 
 
 class AcceleratedProximalGradient(Optimizer):
@@ -65,8 +68,10 @@ class AcceleratedProximalGradient(Optimizer):
         'objective': objective,
     }
     iteration = 0
-    x = x0
+    x = x_best = x0
     y = x_prev = 0
+
+    best_score = objective(x)
 
     f, g = objective.objective.functions
 
@@ -74,18 +79,26 @@ class AcceleratedProximalGradient(Optimizer):
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
         break
       else:
-        # y^{k+1} = x^{k} + w^{k} ( x^{k} - x^{k-1} )
-        # x^{k+1} = prox_{eta^{k} g}( y^{k+1} - eta^{k} gradient[f](y^{k+1}) )
+        # for k = 0,1,...
+        #   y^{k+1} = x^{k} + w^{k} ( x^{k} - x^{k-1} )
+        #   x^{k+1} = prox_{eta^{k} g}( y^{k+1} - eta^{k} gradient[f](y^{k+1}) )
 
         w = iteration / (iteration + 3.0)
         y = x + w * (x - x_prev)
         direction = -1 * f.gradient(y)
         eta = self.learning_rate(iteration=iteration, x=y,
-            direction=direction, prox_function=g, **kwargs)
+            direction=direction, grad_function=f, prox_function=g, **kwargs)
 
         x_prev = x
         x = g.prox(y + eta * direction, eta)
 
         iteration += 1
 
-    return x
+        score = objective(x)
+        if score < best_score:
+          best_score = score
+          x_best = x
+
+        #print '%d | %f' % (iteration, objective(x))
+
+    return Solution(x=x_best)

@@ -7,18 +7,18 @@ from .base import Function
 
 
 ################################## Interfaces ##################################
-class Prox(Function):
+class Prox(object):
   """A function that implements the prox operator
 
     prox_{eta}(x) = min_{y} f(y) + (1/2 eta) ||y-x||_2^2
   """
 
-  def prox(x, eta):
+  def prox(self, x, eta):
     raise NotImplementedError("Prox function not implemented")
 
 
 ################################## Classes #####################################
-class LogisticRegression(Function):
+class LogisticLoss(Function):
   """Logistic Regression loss function
 
   min_{w} \sum_{i} log(1 + exp(-y_i x_i' w))
@@ -59,7 +59,7 @@ class LogisticRegression(Function):
     return result
 
 
-class Quadratic(Function):
+class Quadratic(Prox, Function):
   """Quadratic function
 
   min_{x} 0.5 x'Ax + b'x + c
@@ -67,13 +67,14 @@ class Quadratic(Function):
   Parameters
   ----------
   A : [n, n] array-like
+      Symmetric, positive semidefinite matrix
   b : [n] array-like
   c : [1] array-like
   """
 
   def __init__(self, A, b, c=0.0):
-    self.A = np.asarray(A)
-    self.b = np.asarray(b)
+    self.A = np.atleast_2d(A)
+    self.b = np.atleast_1d(b)
     self.c = np.asarray(c)
 
   def eval(self, x):
@@ -91,8 +92,13 @@ class Quadratic(Function):
     A, b = self.A, self.b
     return np.linalg.solve(A, -b)
 
+  def prox(self, x, eta):
+    A, b = self.A, self.b
+    n = len(x)
+    return np.linalg.lstsq(np.eye(n) + eta * A, x - eta * b)
 
-class Constant(Function):
+
+class Constant(Prox, Function):
 
   def __init__(self, c):
     self.c = c
@@ -108,6 +114,9 @@ class Constant(Function):
     n = x.shape[0]
     return np.zeros((n,n))
 
+  def prox(self, x, eta):
+    return x
+
 
 class Separable(Function):
   """A separable function
@@ -117,20 +126,49 @@ class Separable(Function):
       f(x) = \sum_{i} f_{i}(x)
   """
 
-  def __init__(self, functions):
+  def __init__(self, functions, weights=None):
+
+    if weights is None:
+      weights = np.ones(len(functions))
+
+    assert len(weights) == len(functions)
     self.functions = functions
+    self.weights   = weights
 
   def eval(self, x):
-    evals = [f(x) for f in self.functions]
+    evals = [w * f(x) for (f, w) in zip(self.functions, self.weights)]
     return np.sum(evals)
 
   def gradient(self, x):
-    gradients = [f.gradient(x) for f in self.functions]
-    return np.sum(gradients)
+    gradients = [w * f.gradient(x) for (f, w) in zip(self.functions, self.weights)]
+    return sum(gradients)
 
   def hessian(self, x):
-    hessians = [f.gradient(x) for f in self.functions]
-    return np.sum(hessians)
+    hessians = [w * f.hessian(x) for (f, w) in zip(self.functions, self.weights)]
+    return sum(hessians)
+
+
+class SquaredL2Norm(Quadratic):
+  """||x||_2^2"""
+
+  def __init__(self, n):
+    Quadratic.__init__(self, A=np.eye(n), b=np.zeros(n))
+
+
+class L1Norm(Prox, Function):
+  """||x||_1"""
+
+  def eval(self, x):
+    return np.sum(np.abs(x))
+
+  def gradient(self, x):
+    return np.sign(x)
+
+  def hessian(self, x):
+    raise NotImplementedError("Hessian not defined")
+
+  def prox(self, x, eta):
+    return np.maximum(x - eta, 0) - np.maximum(-x - eta, 0)
 
 
 ################################## Functions ###################################

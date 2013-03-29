@@ -5,6 +5,7 @@ Ellipsoid cutting-plane method
 import numpy as np
 
 from ..base import Optimizer
+from ..problem import Solution
 
 
 class EllipsoidMethod(Optimizer):
@@ -43,4 +44,4 @@ class EllipsoidMethod(Optimizer):
 
         iteration += 1
 
-    return x
+    return Solution(x=x)

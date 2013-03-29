@@ -4,12 +4,12 @@ from numpy.testing import assert_allclose
 from yannopt import functions
 
 
-def test_logistic_regression():
+def test_logistic_loss():
   X = np.array([[ 1.0],
                 [-1.0]])
   y = np.array([1, 1])
 
-  f = functions.LogisticRegression(X, y)
+  f = functions.LogisticLoss(X, y)
   w = np.array([2.0])
 
   # eval

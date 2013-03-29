@@ -6,6 +6,7 @@ import numpy as np
 
 from ..base import Optimizer
 from ..constraints.base import is_linear
+from ..problem import Solution
 
 
 class NewtonsMethod(Optimizer):
@@ -38,7 +39,7 @@ class NewtonsMethod(Optimizer):
 
         iteration += 1
 
-    return x
+    return Solution(x=x)
 
 
 class QPNewtonsMethod(Optimizer):
@@ -55,7 +56,7 @@ class QPNewtonsMethod(Optimizer):
       # (implies Qx + c = 0
       Q, c = objective.objective.A, objective.objective.b
       x = np.linalg.solve(Q, -c)
-      return x
+      return Solution(x=x)
     else:
       ### CONSTRAINED ###
       # Use the same KKT condition, but on a bigger problem.
@@ -81,7 +82,7 @@ class QPNewtonsMethod(Optimizer):
       y = np.linalg.lstsq(M, r)[0]
       x = y[0:n_x]
       # v = y[n_x:n_x+n_v]
-      return x
+      return Solution(x=x)
 
 
 class LinearConstrainedNewtonsMethod(Optimizer):
@@ -139,4 +140,4 @@ class LinearConstrainedNewtonsMethod(Optimizer):
 
         iteration += 1
 
-    return x
+    return Solution(x=x)

@@ -2,6 +2,7 @@
 import numpy as np
 
 from ..base import Optimizer
+from ..problem import Solution
 
 
 class ADMM(Optimizer):
@@ -24,6 +25,8 @@ class ADMM(Optimizer):
 
     f, g = objective.objective.functions
 
+    scores = []
+
     while True:
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
         break
@@ -38,5 +41,6 @@ class ADMM(Optimizer):
         u = u + eta*(x - z)
 
         iteration += 1
+        scores.append(objective(x))
 
-    return x
+    return Solution(x=x, scores=scores)

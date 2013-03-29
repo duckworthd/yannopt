@@ -36,3 +36,23 @@ def quadratic_program2():
   initial   = np.linalg.lstsq(A, b)[0]
 
   return Solution(problem=problem, x=solution, x0=initial)
+
+
+def lasso():
+  A = np.array([[1.0,-0.5, 0.5],
+                [0.2, 0.5,-1.0]])
+  b = np.array([1.0,-1.0])
+
+  Q = A.T.dot(A)
+  c = -1 * A.T.dot(b)
+  d = 0.5 * b.dot(b)
+
+  error = f.Quadratic(10 * Q, 10 * c, 10 * d)
+  regularization = f.L1Norm()
+  objective = f.Separable([error, regularization])
+
+  problem   = minimize(objective)
+  solution  = np.array([0.37548002985282325, 1.6102464213805135e-05, 1.0258154802126289])
+  initial   = np.ones(3) * 10
+
+  return Solution(problem=problem, x=solution, x0=initial)

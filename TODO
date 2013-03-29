@@ -1,23 +1,21 @@
-Problems
-========
-- Add Hessian to LogisticRegression
-- Implement Least Squares, SVM
+Functions
+=========
+* Implement function composition
+- Implement Least Squares
+- Implement SVM
 
 Optimizers
 ==========
 - implement steepest descent method
-- test proximal method
-- Implement Nesterov's accelerated gradient
 - Implement (L-)BFGS
 - Implement primal-dual interior point solver
 - implement primal-dual subgradient descent
 - test ADMM
-- implement Polyak step size
 - implement projection onto linear constraints
 
 Testing
 =======
-- Make harness for testing multiple problems on an optimizer
+* Make harness for testing multiple problems on an optimizer
 
 Constraints
 ===========
@@ -25,14 +23,21 @@ Constraints
   than a log barrier function.
 - add support for finding an initial solution
 
+Stopping Criteria
+=================
+- Implement stopping criterion for Newton's method
+- Implement some method to check convergence using duality gap
+- Implement some convergence criteria based on size of gradient
+
+Learning Rates
+==============
+- implement Polyak step size
+
 General
 =======
-- change all optimizers to return Solution objects
+* fix name collisions b/w stopping criteria, learning rates, optimizers
+* Add some ways to visually inspect convergence. Logging and plotting a must.
 - added symbolic problem definitions
-- Implement some method to check convergence using duality gap
-- Implement stopping criterion for Newton's method
-- Implement some convergence criteria based on size of gradient
-- Add some ways to visually inspect convergence. Logging and plotting a must.
 - implement the following interface
 
   minimize(<expr>)
@@ -42,3 +47,4 @@ General
 
   where <algorithm> is initialized with all algorithm-specific parameters
 - implement Lagrangian from problem definition
+- deal with multiplication, addition of functions

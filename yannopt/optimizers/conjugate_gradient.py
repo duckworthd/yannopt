@@ -5,6 +5,7 @@ Conjugate Gradient Descent
 import numpy as np
 
 from ..base import Optimizer
+from ..problem import Solution
 
 
 class ConjugateGradient(Optimizer):
@@ -19,6 +20,7 @@ class ConjugateGradient(Optimizer):
     previous_direction = 0
     n_dim = len(x)
 
+    scores = []
     while True:
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
         break
@@ -39,7 +41,8 @@ class ConjugateGradient(Optimizer):
         x  += eta * direction
 
         iteration += 1
+        scores.append(objective(x))
         previous_direction = direction
         previous_gradient  = gradient
 
-    return x
+    return Solution(x=x, scores=scores)

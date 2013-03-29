@@ -29,21 +29,21 @@ def test_newtons_method():
   optimizer = Optimizer()
   solution  = problems.quadratic_program1()
 
-  x = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(x, solution.x, atol=1e-5)
+  solution2 = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(solution2.x, solution.x, atol=1e-5)
 
 
 def test_qp_newtons_method():
   optimizer = Optimizer2()
   solution  = problems.quadratic_program2()
 
-  x = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(x, solution.x, atol=1e-5)
+  solution2 = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(solution2.x, solution.x, atol=1e-5)
 
 
 def test_linear_constrained_newtons_method():
   optimizer = Optimizer3()
   solution  = problems.quadratic_program2()
 
-  x = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(x, solution.x, atol=1e-2)
+  solution2 = optimizer.optimize(solution.problem, solution.x0)
+  assert_allclose(solution2.x, solution.x, atol=1e-2)

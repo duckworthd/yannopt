@@ -69,13 +69,32 @@ class Problem(Function):
 
 
 class Solution(object):
-  """Solution to an optimization problem"""
+  """Solution to an optimization problem
+
+  Parameters
+  ----------
+  x : array
+      primal variable
+  v : array
+      dual variable
+  problem : Problem
+      original problem definition
+  x0 : array
+      initial primal variable
+  v0 : array
+      initial dual variable
+  duality_gap : float
+      upper bound on difference between problem(x) and problem(x*)
+  scores : [float]
+      problem(x_t) for each iteration t
+  """
 
   def __init__(self, x=None, v=None, problem=None, x0=None, v0=None,
-               duality_gap=None):
+               duality_gap=None, scores=[]):
     self.x = x
     self.v = v
     self.problem = problem
     self.x0 = x0
     self.v0 = v0
     self.duality_gap = duality_gap
+    self.scores = scores
