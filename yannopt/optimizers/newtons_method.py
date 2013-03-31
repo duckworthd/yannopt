@@ -26,9 +26,7 @@ class NewtonsMethod(Optimizer):
     x = x0
 
     while True:
-      if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
-        break
-      elif is_linear(objective.equality_constraint):
+      if is_linear(objective.equality_constraint):
         ### CONSTRAINED ###
         # solve the KKT conditions matrix for the following quadratic
         # approximation to the original problem
@@ -70,12 +68,17 @@ class NewtonsMethod(Optimizer):
         direction = np.linalg.lstsq(H, -g)[0]
 
       eta = self.learning_rate(iteration=iteration, x=x,
-          direction=direction, **kwargs)
+          direction=direction, H=H, **kwargs)
 
       x  += eta * direction
 
       iteration += 1
       sol.scores.append(objective(x))
+
+      if self.stopping_criterion(iteration=iteration, x=x, H=H,
+          direction=direction, **kwargs):
+        break
+
 
     sol.x = x
     return sol

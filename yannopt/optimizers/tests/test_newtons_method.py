@@ -1,14 +1,14 @@
 from yannopt.optimizers import NewtonsMethod
 from yannopt.learning_rates import BacktrackingLineSearch
-from yannopt.stopping_criteria import MaxIterations
+from yannopt.stopping_criteria import NewtonDecrement
 from yannopt.testing import check_optimizer
 from yannopt.testing import problems
 
 
-class Optimizer(BacktrackingLineSearch, MaxIterations, NewtonsMethod):
+class Optimizer(BacktrackingLineSearch, NewtonDecrement, NewtonsMethod):
   def __init__(self):
     BacktrackingLineSearch.__init__(self)
-    MaxIterations.__init__(self, 10)
+    NewtonDecrement.__init__(self, epsilon=1e-2)
     NewtonsMethod.__init__(self)
 
 

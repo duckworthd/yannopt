@@ -24,7 +24,6 @@ Constraints
 
 Stopping Criteria
 =================
-- Implement stopping criterion for Newton's method
 - Implement some method to check convergence using duality gap
 - Implement some convergence criteria based on size of gradient
 
