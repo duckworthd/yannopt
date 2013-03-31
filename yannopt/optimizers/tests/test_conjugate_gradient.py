@@ -1,20 +1,21 @@
 from yannopt.optimizers import ConjugateGradient
-from yannopt.learning_rates import DecreasingRate
+from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
 from yannopt.testing import check_optimizer
 from yannopt.testing import problems
 
 
-class Optimizer(DecreasingRate, MaxIterations, ConjugateGradient):
+class Optimizer(BacktrackingLineSearch, MaxIterations, ConjugateGradient):
   def __init__(self):
-    DecreasingRate.__init__(self)
+    BacktrackingLineSearch.__init__(self, a=0.5, t=100.0)
     MaxIterations.__init__(self, 50)
     ConjugateGradient.__init__(self)
 
 
 def test_conjugate_gradient():
   solutions = [
-      problems.quadratic_program1()
+      problems.quadratic_program1(),
+      problems.logistic_regression(),
   ]
   optimizer = Optimizer()
 

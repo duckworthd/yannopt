@@ -37,15 +37,15 @@ class LogisticLoss(Function):
 
   def eval(self, x):
     X, y = self.X, self.y
-    y = 2 * y - 1
-    loss = np.log(1 + np.exp(-y * X.dot(x)))
-    return np.sum(loss)
+    denominators = np.log(1 + np.exp(X.dot(x)))
+    numerators = y * X.dot(x)
+    return -1 * np.sum(numerators - denominators)
 
   def gradient(self, x):
     # gradient[f](w) = \sum_{i} (y_i - P(y=1|x;w)) x_i
     X, y = self.X, self.y
     y_hat = 1.0 / (1 + np.exp(-1 * X.dot(x)))
-    return np.sum((y - y_hat)[:, np.newaxis] * X, axis=0)
+    return -1 * np.sum((y - y_hat)[:, np.newaxis] * X, axis=0)
 
   def hessian(self, x):
     # hessian[f](w) = \sum_{i} P(y=1|x;w) P(y=0|x;w) x_i x_i'

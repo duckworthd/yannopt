@@ -89,8 +89,8 @@ class Solution(object):
       problem(x_t) for each iteration t
   """
 
-  def __init__(self, name=None, x=None, v=None, problem=None, x0=None, v0=None,
-               duality_gap=None, scores=[]):
+  def __init__(self, name="", x=None, v=None, problem=None, x0=None, v0=None,
+               duality_gap=None, scores=None):
     self.name = name
     self.x = x
     self.v = v
@@ -98,7 +98,7 @@ class Solution(object):
     self.x0 = x0
     self.v0 = v0
     self.duality_gap = duality_gap
-    self.scores = scores
+    self.scores = [] if scores is None else scores
 
   def __str__(self):
     return self.name

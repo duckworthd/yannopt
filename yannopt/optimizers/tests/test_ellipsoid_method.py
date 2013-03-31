@@ -14,7 +14,8 @@ class Optimizer(EllipsoidCriterion, EllipsoidMethod):
 
 def test_ellipsoid_method():
   solutions = [
-      problems.quadratic_program1()
+      problems.quadratic_program1(),
+      problems.logistic_regression(),
   ]
   optimizer = run_ellipsoid_method
   for solution in solutions:

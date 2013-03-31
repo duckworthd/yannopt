@@ -14,7 +14,7 @@ class ConjugateGradient(Optimizer):
     kwargs = {
         'objective': objective,
     }
-    sol = Solution(problem=objective)
+    sol = Solution(problem=objective, x0=x0)
 
     iteration = 0
     x = x0

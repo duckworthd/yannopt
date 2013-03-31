@@ -16,18 +16,15 @@ class DecreasingRate(object):
 
 
 class BacktrackingLineSearch(object):
-  def __init__(self, a=0.1, b=0.9, t0=1e-12, save_step_size=False):
+  def __init__(self, a=0.1, b=0.9, t0=1e-12, t=1.0, save_step_size=False):
     self.a = a
     self.b = b
     self.t0 = t0
-    self.t = 1.0
+    self.t = t
     self.save_step_size = save_step_size
 
   def learning_rate(self, x, direction, objective, **kwargs):
-    if self.save_step_size:
-      t = self.t
-    else:
-      t = 1.0
+    t = self.t
 
     score = objective(x)
     gradient = objective.gradient(x)
@@ -60,16 +57,13 @@ class AdaptiveGradient(object):
 
 class ProximalBacktrackingLineSearch(object):
   """Backtracking search for Proximal methods"""
-  def __init__(self, b=0.9, save_step_size=False):
+  def __init__(self, b=0.9, t=1.0, save_step_size=False):
     self.b = b
-    self.t = 1.0
+    self.t = t
     self.save_step_size = save_step_size
 
   def learning_rate(self, x, direction, grad_function, prox_function, **kwargs):
-    if self.save_step_size:
-      t = self.t
-    else:
-      t = 1.0
+    t = self.t
 
     # make quadratic approximation to the differentiable function  at x while
     # scaling the quadratic term down until 1/l >= its Lipschitz constant

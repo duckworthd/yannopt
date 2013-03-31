@@ -12,6 +12,7 @@ class SubgradientDescent(Optimizer):
     kwargs = {
         'objective': objective,
     }
+    sol = Solution(problem=objective, x0=x0)
     iteration = 0
     x = x0
 
@@ -24,8 +25,10 @@ class SubgradientDescent(Optimizer):
             direction=direction, **kwargs)
         x  += eta * direction
         iteration += 1
+        sol.scores.append(objective(x))
 
-    return Solution(x=x)
+    sol.x = x
+    return sol
 
 
 class AcceleratedGradientDescent(Optimizer):
@@ -51,6 +54,7 @@ class AcceleratedGradientDescent(Optimizer):
     kwargs = {
         'objective': objective,
     }
+    sol = Solution(problem=objective, x0=x0)
     iteration = 0
     x = x_best = x0
     y = x_prev = 0
@@ -82,5 +86,7 @@ class AcceleratedGradientDescent(Optimizer):
           x_best = x
 
         #print '%d | %f' % (iteration, score)
+        sol.scores.append(score)
 
-    return Solution(x=x_best)
+    sol.x = x_best
+    return sol

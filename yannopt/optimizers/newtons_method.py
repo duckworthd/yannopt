@@ -21,6 +21,7 @@ class NewtonsMethod(Optimizer):
     kwargs = {
         'objective': objective,
     }
+    sol = Solution(problem=objective, x0=x0)
     iteration = 0
     x = x0
 
@@ -66,7 +67,7 @@ class NewtonsMethod(Optimizer):
         #       H =  hessian[f](x)
         H = objective.hessian(x)
         g = objective.gradient(x)
-        direction = -1 * np.linalg.lstsq(H, g)[0]
+        direction = np.linalg.lstsq(H, -g)[0]
 
       eta = self.learning_rate(iteration=iteration, x=x,
           direction=direction, **kwargs)
@@ -74,5 +75,7 @@ class NewtonsMethod(Optimizer):
       x  += eta * direction
 
       iteration += 1
+      sol.scores.append(objective(x))
 
-    return Solution(x=x)
+    sol.x = x
+    return sol

@@ -8,7 +8,7 @@ from yannopt.testing import problems
 class Optimizer(BacktrackingLineSearch, MaxIterations, NewtonsMethod):
   def __init__(self):
     BacktrackingLineSearch.__init__(self)
-    MaxIterations.__init__(self, 1)
+    MaxIterations.__init__(self, 10)
     NewtonsMethod.__init__(self)
 
 
@@ -16,6 +16,7 @@ def test_newtons_method():
   solutions = [
       problems.quadratic_program1(),
       problems.quadratic_program2(),
+      problems.logistic_regression()
   ]
   optimizer = Optimizer()
 
