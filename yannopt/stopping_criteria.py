@@ -5,7 +5,19 @@ Stopping criterion
 import numpy as np
 
 
+class StoppingCriteria(object):
+
+  def __call__(self, *args, **kwargs):
+    return self.stopping_criterion(*args, **kwargs)
+
+
 class MaxIterations(object):
+
+  def __init__(self, *args, **kwargs):
+    self.stopping_criterion = _MaxIterations(*args, **kwargs)
+
+
+class _MaxIterations(StoppingCriteria):
 
   def __init__(self, n=100):
     self.n = n
@@ -16,6 +28,12 @@ class MaxIterations(object):
 
 class EllipsoidCriterion(object):
 
+  def __init__(self, *args, **kwargs):
+    self.stopping_criterion = _EllipsoidCriterion(*args, **kwargs)
+
+
+class _EllipsoidCriterion(StoppingCriteria):
+
   def __init__(self, epsilon):
     self.epsilon = epsilon
 
@@ -25,6 +43,12 @@ class EllipsoidCriterion(object):
 
 
 class NewtonDecrement(object):
+
+  def __init__(self, *args, **kwargs):
+    self.stopping_criterion = _NewtonDecrement(*args, **kwargs)
+
+
+class _NewtonDecrement(StoppingCriteria):
   """Check if Newton Decrement is below threshold
 
   Use the fact that,
@@ -46,6 +70,12 @@ class NewtonDecrement(object):
 
 
 class GradientNorm(object):
+
+  def __init__(self, *args, **kwargs):
+    self.stopping_criterion = _GradientNorm(*args, **kwargs)
+
+
+class _GradientNorm(StoppingCriteria):
   """Check if the L2 norm of the gradient is small
 
   Use the fact that,

@@ -25,7 +25,6 @@ Constraints
 Stopping Criteria
 =================
 - Implement some method to check convergence using duality gap
-- Implement some convergence criteria based on size of gradient
 
 Learning Rates
 ==============
@@ -33,12 +32,6 @@ Learning Rates
 
 General
 =======
-* fix name collisions b/w stopping criteria, learning rates, optimizers
-
-  class LineSearch(...):
-    def __init__(self, ...):
-      self.learning_rate = _LineSearch(...)
-
 * Add some ways to visually inspect convergence. Logging and plotting a must.
 - added symbolic problem definitions
 - implement the following interface

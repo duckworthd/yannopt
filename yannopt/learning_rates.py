@@ -4,7 +4,17 @@ Learning Rates for gradient-based methods
 import numpy as np
 
 
+class LearningRate(object):
+  def __call__(self, *args, **kwargs):
+    return self.learning_rate(*args, **kwargs)
+
+
 class DecreasingRate(object):
+  def __init__(self, *args, **kwargs):
+    self.learning_rate = _DecreasingRate(*args, **kwargs)
+
+
+class _DecreasingRate(LearningRate):
   """Learning rate of the form a / (iter + b)^p"""
   def __init__(self, a=1.0, b=1.0, p=0.5):
     self.a = a
@@ -16,6 +26,11 @@ class DecreasingRate(object):
 
 
 class BacktrackingLineSearch(object):
+  def __init__(self, *args, **kwargs):
+    self.learning_rate = _BacktrackingLineSearch(*args, **kwargs)
+
+
+class _BacktrackingLineSearch(LearningRate):
   def __init__(self, a=0.1, b=0.9, t0=1e-12, t=1.0, save_step_size=False):
     self.a = a
     self.b = b
@@ -45,6 +60,11 @@ class BacktrackingLineSearch(object):
 
 
 class AdaptiveGradient(object):
+  def __init__(self, *args, **kwargs):
+    self.learning_rate = _AdaptiveGradient(*args, **kwargs)
+
+
+class _AdaptiveGradient(LearningRate):
   """Adaptive Gradient-based per-feature learning rate"""
   def __init__(self, multiplier=1.0, smoothing=0.1):
     self.weights = smoothing
@@ -56,6 +76,11 @@ class AdaptiveGradient(object):
 
 
 class ProximalBacktrackingLineSearch(object):
+  def __init__(self, *args, **kwargs):
+    self.learning_rate = _ProximalBacktrackingLineSearch(*args, **kwargs)
+
+
+class _ProximalBacktrackingLineSearch(LearningRate):
   """Backtracking search for Proximal methods"""
   def __init__(self, b=0.9, t=1.0, save_step_size=False):
     self.b = b
