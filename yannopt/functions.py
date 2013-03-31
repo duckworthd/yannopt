@@ -156,25 +156,19 @@ class Separable(Function):
       f(x) = \sum_{i} f_{i}(x)
   """
 
-  def __init__(self, functions, weights=None):
-
-    if weights is None:
-      weights = np.ones(len(functions))
-
-    assert len(weights) == len(functions)
+  def __init__(self, functions):
     self.functions = functions
-    self.weights   = weights
 
   def eval(self, x):
-    evals = [w * f(x) for (f, w) in zip(self.functions, self.weights)]
+    evals = [f(x) for f in self.functions]
     return np.sum(evals)
 
   def gradient(self, x):
-    gradients = [w * f.gradient(x) for (f, w) in zip(self.functions, self.weights)]
+    gradients = [f.gradient(x) for f in self.functions]
     return sum(gradients)
 
   def hessian(self, x):
-    hessians = [w * f.hessian(x) for (f, w) in zip(self.functions, self.weights)]
+    hessians = [f.hessian(x) for f in self.functions]
     return sum(hessians)
 
 

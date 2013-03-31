@@ -1,6 +1,11 @@
 Functions
 =========
 * Implement function composition
+  - addition
+  - multiplication (scalar)
+  - multiplication (matrix, vector)
+  - linear in a convex function
+  - convex in a convex function
 
 Optimizers
 ==========
@@ -9,12 +14,14 @@ Optimizers
 - Implement primal-dual interior point solver
 - implement primal-dual subgradient descent
 - implement projection onto linear constraints
+- implement mirror descent
 * double check that conjugate gradient is working. Shouldn't it converge
   exactly for quadratic problems when the number of iterations = dimension of
   problem?
 
 Testing
 =======
+- implement an example that uses general constraints
 
 Constraints
 ===========
@@ -32,7 +39,6 @@ Learning Rates
 
 General
 =======
-* Add some ways to visually inspect convergence. Logging and plotting a must.
 - added symbolic problem definitions
 - implement the following interface
 
