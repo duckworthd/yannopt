@@ -1,9 +1,8 @@
-from numpy.testing import assert_allclose
-
 from yannopt.optimizers import ProximalGradient, AcceleratedProximalGradient
 from yannopt.learning_rates import ProximalBacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
-from yannopt.tests import problems
+from yannopt.testing import check_optimizer
+from yannopt.testing import problems
 
 
 class Optimizer(ProximalBacktrackingLineSearch, MaxIterations, ProximalGradient):
@@ -21,16 +20,20 @@ class Optimizer2(ProximalBacktrackingLineSearch, MaxIterations, AcceleratedProxi
 
 
 def test_proximal_gradient():
+  solutions = [
+      problems.lasso()
+  ]
   optimizer = Optimizer(100)
-  solution  = problems.lasso()
 
-  solution2 = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(solution2.x, solution.x, atol=1e-2)
+  for solution in solutions:
+    yield check_optimizer, optimizer, solution
 
 
 def test_accelerated_proximal_gradient():
+  solutions = [
+      problems.lasso()
+  ]
   optimizer = Optimizer2(100)
-  solution  = problems.lasso()
 
-  solution2 = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(solution2.x, solution.x, atol=1e-2)
+  for solution in solutions:
+    yield check_optimizer, optimizer, solution

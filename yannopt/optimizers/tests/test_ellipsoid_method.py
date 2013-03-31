@@ -1,21 +1,28 @@
 import numpy as np
-from numpy.testing import assert_allclose
 
 from yannopt.optimizers import EllipsoidMethod
 from yannopt.stopping_criteria import EllipsoidCriterion
-from yannopt.tests import problems
+from yannopt.testing import check_optimizer
+from yannopt.testing import problems
 
 
 class Optimizer(EllipsoidCriterion, EllipsoidMethod):
   def __init__(self):
-    EllipsoidCriterion.__init__(self, 1e-4)
+    EllipsoidCriterion.__init__(self, 1e-2)
     EllipsoidMethod.__init__(self)
 
 
 def test_ellipsoid_method():
-  P0 = np.eye(3) * 1e4
-  solution  = problems.quadratic_program1()
-  optimizer = Optimizer()
+  solutions = [
+      problems.quadratic_program1()
+  ]
+  optimizer = run_ellipsoid_method
+  for solution in solutions:
+    yield check_optimizer, optimizer, solution
 
-  solution2 = optimizer.optimize(solution.problem, P0, solution.x0)
-  assert_allclose(solution2.x, solution.x, atol=1e-2)
+
+def run_ellipsoid_method(solution):
+  n = len(solution.x0)
+  P0 = np.eye(n) * 1e4
+  x0 = solution.x0
+  return Optimizer().optimize(solution.problem, P0, x0)

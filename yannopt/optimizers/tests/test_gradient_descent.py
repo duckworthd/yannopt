@@ -3,12 +3,13 @@ from numpy.testing import assert_allclose
 from yannopt.optimizers import SubgradientDescent, AcceleratedGradientDescent
 from yannopt.learning_rates import BacktrackingLineSearch
 from yannopt.stopping_criteria import MaxIterations
-from yannopt.tests import problems
+from yannopt.testing import check_optimizer
+from yannopt.testing import problems
 
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, SubgradientDescent):
   def __init__(self, n_iter):
-    BacktrackingLineSearch.__init__(self, a=0.0)
+    BacktrackingLineSearch.__init__(self, a=0.5)
     MaxIterations.__init__(self, n_iter)
     SubgradientDescent.__init__(self)
 
@@ -21,24 +22,19 @@ class Optimizer2(BacktrackingLineSearch, MaxIterations, AcceleratedGradientDesce
 
 
 def test_gradient_descent():
-  optimizer = Optimizer(50)
-  solution  = problems.quadratic_program1()
-
-  solution2 = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(solution2.x, solution.x, atol=1e-2)
-
-
-def test_gradient_descent2():
+  solutions = [
+      problems.quadratic_program1(),
+      problems.lasso()
+  ]
   optimizer = Optimizer(200)
-  solution  = problems.lasso()
-
-  solution2 = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(solution.problem(solution2.x), solution.problem(solution.x), atol=1e-3)
+  for solution in solutions:
+    yield check_optimizer, optimizer, solution
 
 
 def test_accelerated_gradient_descent():
+  solutions = [
+      problems.quadratic_program1()
+  ]
   optimizer = Optimizer2(200)
-  solution  = problems.quadratic_program1()
-
-  solution2 = optimizer.optimize(solution.problem, solution.x0)
-  assert_allclose(solution.problem(solution2.x), solution.problem(solution.x), atol=1e-3)
+  for solution in solutions:
+    yield check_optimizer, optimizer, solution

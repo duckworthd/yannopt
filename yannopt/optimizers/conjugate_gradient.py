@@ -14,26 +14,27 @@ class ConjugateGradient(Optimizer):
     kwargs = {
         'objective': objective,
     }
+    sol = Solution(problem=objective)
+
     iteration = 0
     x = x0
     previous_gradient = 0
     previous_direction = 0
     n_dim = len(x)
 
-    scores = []
     while True:
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
         break
       else:
         if iteration % n_dim == 0:
-          previous_direction = 0
-          previous_gradient  = 0
+          previous_direction = previous_gradient = np.zeros(n_dim)
 
         gradient = objective.gradient(x)
-        if not (np.all(previous_gradient == 0) or np.all(gradient == 0)):
+        if float(gradient.dot(previous_gradient)) > 0:
+          # fletcher-reeves
           b = gradient.dot(gradient) / (gradient.dot(previous_gradient))
         else:
-          b = 1.0
+          b = 0.0
         direction = -1 * (gradient + b * previous_direction)
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
@@ -41,8 +42,9 @@ class ConjugateGradient(Optimizer):
         x  += eta * direction
 
         iteration += 1
-        scores.append(objective(x))
+        sol.scores.append(objective(x))
         previous_direction = direction
         previous_gradient  = gradient
 
-    return Solution(x=x, scores=scores)
+    sol.x = x
+    return sol

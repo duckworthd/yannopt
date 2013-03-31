@@ -12,10 +12,12 @@ Optimizers
 - implement primal-dual subgradient descent
 - test ADMM
 - implement projection onto linear constraints
+* double check that conjugate gradient is working. Shouldn't it converge
+  exactly for quadratic problems when the number of iterations = dimension of
+  problem?
 
 Testing
 =======
-* Make harness for testing multiple problems on an optimizer
 
 Constraints
 ===========
@@ -36,6 +38,11 @@ Learning Rates
 General
 =======
 * fix name collisions b/w stopping criteria, learning rates, optimizers
+
+  class LineSearch(...):
+    def __init__(self, ...):
+      self.learning_rate = _LineSearch(...)
+
 * Add some ways to visually inspect convergence. Logging and plotting a must.
 - added symbolic problem definitions
 - implement the following interface

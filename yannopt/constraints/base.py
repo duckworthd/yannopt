@@ -4,7 +4,9 @@ from ..base import Constraint
 
 
 def is_linear(constraint):
-  return isinstance(constraint, LinearEquality)
+  return (isinstance(constraint, LinearEquality) and
+      constraint.A is not None)
+
 
 
 class LinearEquality(Constraint):

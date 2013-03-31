@@ -16,7 +16,7 @@ def quadratic_program1():
   solution  = objective.solution()
   initial   = np.zeros(len(b))
 
-  return Solution(problem=problem, x=solution, x0=initial)
+  return Solution(problem=problem, x=solution, x0=initial, name='quadratic_program1')
 
 
 def quadratic_program2():
@@ -35,7 +35,7 @@ def quadratic_program2():
   solution  = np.array([-2.48,  1.74, -2.68])
   initial   = np.linalg.lstsq(A, b)[0]
 
-  return Solution(problem=problem, x=solution, x0=initial)
+  return Solution(problem=problem, x=solution, x0=initial, name='quadratic_program2')
 
 
 def lasso():
@@ -55,4 +55,4 @@ def lasso():
   solution  = np.array([0.37548002985282325, 1.6102464213805135e-05, 1.0258154802126289])
   initial   = np.ones(3) * 10
 
-  return Solution(problem=problem, x=solution, x0=initial)
+  return Solution(problem=problem, x=solution, x0=initial, name='lasso')
