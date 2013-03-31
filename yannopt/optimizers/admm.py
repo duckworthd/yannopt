@@ -19,13 +19,12 @@ class ADMM(Optimizer):
     kwargs = {
         'objective': objective,
     }
+    sol = Solution(problem=objective, x0=x0)
     iteration = 0
     x = z = x0
     u = np.zeros(x.shape)
 
     f, g = objective.objective.functions
-
-    scores = []
 
     while True:
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
@@ -41,6 +40,7 @@ class ADMM(Optimizer):
         u = u + eta*(x - z)
 
         iteration += 1
-        scores.append(objective(x))
+        sol.scores.append(objective(x))
 
-    return Solution(x=x, scores=scores)
+    sol.x = x
+    return sol

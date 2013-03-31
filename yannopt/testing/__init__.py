@@ -12,6 +12,7 @@ def check_optimizer(optimize, solution, tol=1e-2):
   solution2 = optimize(solution)
   p   = solution.problem( solution.x)
   p2  = solution.problem(solution2.x)
+  #import ipdb; ipdb.set_trace()
   assert abs(p-p2) < tol, solution.name
 
 

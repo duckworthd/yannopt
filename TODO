@@ -10,7 +10,6 @@ Optimizers
 - Implement (L-)BFGS
 - Implement primal-dual interior point solver
 - implement primal-dual subgradient descent
-- test ADMM
 - implement projection onto linear constraints
 * double check that conjugate gradient is working. Shouldn't it converge
   exactly for quadratic problems when the number of iterations = dimension of

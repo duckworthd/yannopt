@@ -95,7 +95,7 @@ class Quadratic(Prox, Function):
   def prox(self, x, eta):
     A, b = self.A, self.b
     n = len(x)
-    return np.linalg.lstsq(np.eye(n) + eta * A, x - eta * b)
+    return np.linalg.lstsq(np.eye(n) + eta * A, x - eta * b)[0]
 
 
 class Constant(Prox, Function):
@@ -149,10 +149,27 @@ class Separable(Function):
 
 
 class SquaredL2Norm(Quadratic):
-  """||x||_2^2"""
+  """(1/2)||Ax - b||_2^2"""
 
-  def __init__(self, n):
-    Quadratic.__init__(self, A=np.eye(n), b=np.zeros(n))
+  def __init__(self, A=None, b=None, n=None):
+    if n is None:
+      n = A.shape[1]
+
+    if A is None:
+      A = np.eye(n)
+
+    if b is None:
+      b = np.zeros(n)
+
+    # use (1/2)||Ax-b||_2^2
+    #     = (1/2) (Ax-b)'(Ax-b)
+    #     = (1/2) (x'A'Ax -2b'Ax + b'b)
+    #     = (1/2) x'Qx - r'x + (1/2) s
+    Q = A.T.dot(A)
+    r = -b.dot(A)
+    s = 0.5 * b.dot(b)
+
+    Quadratic.__init__(self, A=Q, b=r, c=s)
 
 
 class L1Norm(Prox, Function):
