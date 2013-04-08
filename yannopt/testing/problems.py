@@ -71,3 +71,18 @@ def logistic_regression():
   initial   = np.ones(3)
 
   return Solution(problem=problem, x=solution, x0=initial, name='logistic_regression')
+
+
+def logistic_regression2():
+  A = np.array([[1.0,-0.5, 0.5],
+                [0.2, 0.5,-1.0],
+                [0.2, 0.5,-2.0],
+                [0.8, 0.3, 0.0]])
+  b = np.array([1.0, 0.0, 1.0, 1.0])
+  objective = f.LogisticLoss(A, b)
+
+  problem   = minimize(objective)
+  solution  = np.array([ 151.62104877, -278.68114839,  -71.81346763])
+  initial   = np.ones(3)
+
+  return Solution(problem=problem, x=solution, x0=initial, name='logistic_regression')

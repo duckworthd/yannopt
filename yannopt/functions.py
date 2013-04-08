@@ -4,13 +4,14 @@ Common loss functions
 import numpy as np
 
 from .base import Function
+from .utils import drop_dimensions
 
 
 ################################## Interfaces ##################################
 class Prox(object):
   """A function that implements the prox operator
 
-    prox_{eta}(x) = min_{y} f(y) + (1/2 eta) ||y-x||_2^2
+    prox_{eta}(x) = argmin_{y} eta f(y) + (1/2) ||y-x||_2^2
   """
 
   def prox(self, x, eta):
@@ -92,7 +93,7 @@ class HingeLoss(Function):
 class Quadratic(Prox, Function):
   """Quadratic function
 
-  min_{x} 0.5 x'Ax + b'x + c
+  0.5 x'Ax + b'x + c
 
   Parameters
   ----------
@@ -126,6 +127,34 @@ class Quadratic(Prox, Function):
     A, b = self.A, self.b
     n = len(x)
     return np.linalg.lstsq(np.eye(n) + eta * A, x - eta * b)[0]
+
+
+class Affine(Function):
+  """Affine function
+
+    Ax + b
+
+  Parameters
+  ----------
+  A : [m, n] array-like
+  b : [m] array-like
+  """
+
+  def __init__(self, A, b):
+    self.A = A
+    self.b = b
+
+  def eval(self, x):
+    A, b = self.A, self.b
+    return A.dot(x) + b
+
+  def gradient(self, x):
+    A, b = self.A, self.b
+    return self.A.T
+
+  def hessian(self, x):
+    n = len(x)
+    return np.zeros((n,n))
 
 
 class Constant(Prox, Function):
@@ -170,6 +199,43 @@ class Separable(Function):
   def hessian(self, x):
     hessians = [f.hessian(x) for f in self.functions]
     return sum(hessians)
+
+
+class Composition(Function):
+  """f(g(x))
+
+  Parameters
+  ----------
+  outer_functions : Function or [Function]
+      components of f, stacked
+  inner_functions : Function or [Function]
+      components of g, stacked
+  """
+
+  def __init__(self, outer_functions, inner_functions):
+
+    if isinstance(outer_functions, Function):
+      outer_functions = [outer_functions]
+
+    if isinstance(inner_functions, Function):
+      inner_functions = [inner_functions]
+
+    self.outer_functions = outer_functions
+    self.inner_functions = inner_functions
+
+  def eval(self, x):
+    y = np.hstack(g(x) for g in self.inner_functions)
+    z = np.hstack(f(y) for f in self.outer_functions)
+    return z
+
+  def gradient(self, x):
+    y = np.hstack(g(x) for g in self.inner_functions)
+    G = np.vstack(np.atleast_2d(f.gradient(y).T) for f in self.outer_functions)
+    H = np.vstack(np.atleast_2d(g.gradient(x).T) for g in self.inner_functions)
+    return drop_dimensions( ( G.dot(H) ).T )
+
+  def hessian(self, x):
+    raise NotImplementedError("TODO")
 
 
 class SquaredL2Norm(Quadratic):

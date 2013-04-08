@@ -59,3 +59,33 @@ def test_hinge_loss():
     0 + \
     - 1 * -1 * X[1]
   ), 'hinge loss subgradient'
+
+
+def test_composition():
+  A = np.array([[1,2,3],
+                [4,5,6]])
+  b = np.array([1,-1])
+  x = np.array([5,9,19])
+
+  g = functions.Affine(A, -b)
+  f = functions.SquaredL2Norm(n=2)
+
+  composed = functions.Composition(f, g)
+
+  # eval
+  assert_allclose(
+      composed(x),
+      0.5 * np.linalg.norm(A.dot(x) - b) ** 2
+  )
+
+  # gradient
+  assert_allclose(
+      composed.gradient(x),
+      A.T.dot( A.dot(x) - b )
+  )
+
+  # hessian
+  assert_allclose(
+      composed.hessian(x),
+      A.T.dot(A)
+  )

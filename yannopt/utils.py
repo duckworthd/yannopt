@@ -41,3 +41,14 @@ def unvectorize(sizes, x):
     result[key] = A
     i += s
   return result
+
+
+def drop_dimensions(x):
+  """If any final dimensions are 1, drop them
+
+  For example, if x.shape == (3,5,1), then this will return an array of size
+  (3,5)
+  """
+  while x.shape[-1] == 1:
+    x = x.reshape(x.shape[0:-1])
+  return x
