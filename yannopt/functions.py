@@ -255,6 +255,26 @@ class Composition(Function):
     return drop_dimensions(R.T).T
 
 
+class Stacked(Function):
+  """[f_{1}(x); f_{2}(x); ...]"""
+
+  def __init__(self, functions):
+    self.functions = functions
+
+  def eval(self, x):
+    return np.hstack(f(x) for f in self.functions)
+
+  def gradient(self, x):
+    gradients = [f.gradient(x).T for f in self.functions]
+    return drop_dimensions(np.vstack(gradients).T)
+
+  def hessian(self, x):
+    hessians = [f.hessian(x) for f in self.functions]
+    hessians = [np.atleast_3d(h.T).T for h in hessians]
+    result = np.concatenate(hessians, axis=0)
+    return drop_dimensions(result.T).T
+
+
 class SquaredL2Norm(Quadratic):
   """(1/2)||Ax - b||_2^2"""
 

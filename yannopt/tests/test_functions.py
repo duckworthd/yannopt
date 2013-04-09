@@ -61,6 +61,38 @@ def test_hinge_loss():
   ), 'hinge loss subgradient'
 
 
+def test_stacked():
+  A = np.array([[1,2],
+                [4,5]])
+  b = np.array([1])
+  w = np.asarray([2,1])
+
+  f1= functions.Affine(A, -b)
+  f2= functions.Quadratic(A.T.dot(A), np.asarray([0,2]))
+  f = functions.Stacked([f1, f2])
+
+  # eval
+  assert_allclose(
+      f(w),
+      list(f1(w)) + [f2(w)]
+  )
+  assert f(w).shape == (3,)
+
+  # gradient
+  assert_allclose(
+      f.gradient(w),
+      np.vstack([f1.gradient(w).T, f2.gradient(w)]).T
+  )
+  assert f.gradient(w).shape == (2, 3)
+
+  # hessian
+  assert_allclose(
+      f.hessian(w),
+      np.concatenate([f1.hessian(w), np.atleast_3d(f2.hessian(w)).T])
+  )
+  assert f.hessian(w).shape == (3, 2, 2)
+
+
 def test_composition():
   A = np.array([[1,2,3],
                 [4,5,6]])
