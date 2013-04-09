@@ -1,6 +1,8 @@
 """
 Common loss functions
 """
+import itertools
+
 import numpy as np
 
 from .base import Function
@@ -153,8 +155,8 @@ class Affine(Function):
     return self.A.T
 
   def hessian(self, x):
-    n = len(x)
-    return np.zeros((n,n))
+    m,n = self.A.shape
+    return np.zeros((m,n,n))
 
 
 class Constant(Prox, Function):
@@ -206,36 +208,51 @@ class Composition(Function):
 
   Parameters
   ----------
-  outer_functions : Function or [Function]
-      components of f, stacked
-  inner_functions : Function or [Function]
-      components of g, stacked
+  outer_function : Function
+      components of f
+  inner_function : Function
+      components of g
   """
 
-  def __init__(self, outer_functions, inner_functions):
+  def __init__(self, outer_function, inner_function):
 
-    if isinstance(outer_functions, Function):
-      outer_functions = [outer_functions]
-
-    if isinstance(inner_functions, Function):
-      inner_functions = [inner_functions]
-
-    self.outer_functions = outer_functions
-    self.inner_functions = inner_functions
+    self.outer_function = outer_function
+    self.inner_function = inner_function
 
   def eval(self, x):
-    y = np.hstack(g(x) for g in self.inner_functions)
-    z = np.hstack(f(y) for f in self.outer_functions)
+    f,g = self.outer_function, self.inner_function
+    y   = g(x)
+    z   = f(y)
     return z
 
   def gradient(self, x):
-    y = np.hstack(g(x) for g in self.inner_functions)
-    G = np.vstack(np.atleast_2d(f.gradient(y).T) for f in self.outer_functions)
-    H = np.vstack(np.atleast_2d(g.gradient(x).T) for g in self.inner_functions)
-    return drop_dimensions( ( G.dot(H) ).T )
+    f,g = self.outer_function, self.inner_function
+    y   = g(x)
+    G1  = np.atleast_2d(f.gradient(y).T)
+    H1  = np.atleast_2d(g.gradient(x).T)
+    return drop_dimensions( ( G1.dot(H1) ).T )
 
   def hessian(self, x):
-    raise NotImplementedError("TODO")
+    f,g = self.outer_function, self.inner_function
+    n = len(x)
+    y = g(x)
+    m = len(y)
+    o = len(np.atleast_1d(self(x)))
+    R = np.zeros( (o, n, n) )
+
+    G2 = np.atleast_3d(g.hessian(x).T).T
+    F2 = np.atleast_3d(f.hessian(y).T).T
+    G1 = np.atleast_2d(g.gradient(x).T)
+    F1 = np.atleast_2d(f.gradient(y).T)
+
+    for a in range(o):
+      for i, j in itertools.product(range(n), repeat=2):
+        for k in range(m):
+          R[a, i, j] += F1[a,k] * G2[k,i,j]
+        for k, l in itertools.product(range(m), repeat=2):
+          R[a, i, j] += F2[a,k,l] * G1[k,i] * G1[l,j]
+
+    return drop_dimensions(R.T).T
 
 
 class SquaredL2Norm(Quadratic):
