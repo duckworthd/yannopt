@@ -49,7 +49,7 @@ def lasso():
 
   error = f.Quadratic(10 * Q, 10 * c, 10 * d)
   regularization = f.L1Norm()
-  objective = f.Separable([error, regularization])
+  objective = f.Addition([error, regularization])
 
   problem   = minimize(objective)
   solution  = np.array([0.37548002985282325, 1.6102464213805135e-05, 1.0258154802126289])

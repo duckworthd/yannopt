@@ -23,7 +23,7 @@ class ProximalGradient(Optimizer):
   ----------
   objective : Problem
       Problem with no constraints. objective.objective is assumed to implement
-      Separable and consist of 2 functions. objective.objective.functions[0] is
+      Addition and consist of 2 functions. objective.objective.functions[0] is
       assumed differentiable and objective.objective.functions[1] implements
       Prox.
   x0 : array

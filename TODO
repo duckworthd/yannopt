@@ -3,9 +3,7 @@ Functions
 * Implement function composition
   - addition
   - multiplication (scalar)
-  - multiplication (matrix, vector)
-  - linear in a convex function
-  - convex in a convex function
+  - affine transformation
 
 Optimizers
 ==========
@@ -15,6 +13,7 @@ Optimizers
 - implement primal-dual subgradient descent
 - implement projection onto linear constraints
 - implement mirror descent
+- implement Conditional Gradient Descent (aka Frank-Wolfe)
 * double check that conjugate gradient is working. Shouldn't it converge
   exactly for quadratic problems when the number of iterations = dimension of
   problem?
@@ -36,6 +35,7 @@ Stopping Criteria
 Learning Rates
 ==============
 - implement Polyak step size
+- implement ADMM step size scheme (ADMM paper, page 20)
 
 General
 =======

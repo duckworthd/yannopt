@@ -1,3 +1,5 @@
+import itertools
+
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -120,4 +122,36 @@ def test_composition():
   assert_allclose(
       composed.hessian(x),
       A.T.dot(A)
+  )
+
+
+def test_elementwise_multiplication():
+  A = np.array([[1,2,3],
+                [4,5,6]])
+  b = np.array([1,-1])
+  x = np.array([5,9,19])
+
+  g = functions.Affine(A, -b)
+  product = functions.ElementwiseProduct([g, g])
+
+  # eval
+  assert_allclose(
+      product(x),
+      g(x) * g(x)
+  )
+
+  # gradient
+  assert_allclose(
+      product.gradient(x),
+      (2 * A * np.atleast_2d(g(x)).T).T
+  )
+
+  # hessian
+  hessian = np.zeros( (2, 3, 3) )
+  for i in range(2):
+    for j, k in itertools.product(range(3), repeat=2):
+      hessian[i,j,k] = 2 * A[i,j] * A[i,k]
+  assert_allclose(
+      product.hessian(x),
+      hessian
   )

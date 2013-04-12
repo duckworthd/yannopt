@@ -179,8 +179,8 @@ class Constant(Prox, Function):
     return x
 
 
-class Separable(Function):
-  """A separable function
+class Addition(Function):
+  """Addition of functions
 
   Function of the form,
 
@@ -192,7 +192,7 @@ class Separable(Function):
 
   def eval(self, x):
     evals = [f(x) for f in self.functions]
-    return np.sum(evals)
+    return sum(evals)
 
   def gradient(self, x):
     gradients = [f.gradient(x) for f in self.functions]
@@ -201,6 +201,71 @@ class Separable(Function):
   def hessian(self, x):
     hessians = [f.hessian(x) for f in self.functions]
     return sum(hessians)
+
+
+class ElementwiseProduct(Function):
+  """Elementwise Product of functions
+
+  Function of the form,
+
+      f(x) = \prod_{i} f_{i}(x)
+  """
+
+  def __init__(self, functions):
+    self.functions = functions
+
+  def eval(self, x):
+    evals = [f(x) for f in self.functions]
+    return np.prod(evals, axis=0)
+
+  def gradient(self, x):
+    # [df(x)/dx_k]_l = \sum_{i} (\prod_{j != i} [f_{j}(x)]_l) [df(x)/dx_k]_l
+    gradients = [f.gradient(x) for f in self.functions]
+    gradients = [np.atleast_2d(g).T for g in gradients]   # rows = outputs, columns = inputs
+
+    # cross_products[i,j] = \prod_{k != i} [ f_{k}(x) ]_{j}
+    evals = [f(x) for f in self.functions]
+    prod  = np.prod(evals, axis=0)
+    cross_products = [prod / e for e in evals]
+    cross_products = np.nan_to_num(np.asarray(cross_products, dtype=float))
+
+    result = 0
+    for (cp, g) in zip(cross_products, gradients):
+      result += np.atleast_2d(cp).T * g
+    return drop_dimensions(result.T)
+
+  def hessian(self, x):
+    evals     = [f(x) for f in self.functions]
+    gradients = [f.gradient(x) for f in self.functions]
+    gradients = [np.atleast_2d(g).T for g in gradients]   # rows = outputs, columns = inputs
+    hessians  = [f.hessian(x) for f in self.functions]
+
+    n = len(x)
+    n_func = len(self.functions)
+    m = len(np.asarray(evals[0]))
+
+    result = np.zeros( (m, n, n) )
+    cross_products = self._cross_evals(x, 1)
+    cross_products2= self._cross_evals(x, 2)
+    for h in range(m):
+      for i, j in itertools.product(range(n), repeat=2):
+        for k in range(n_func):
+          result[h,i,j] += hessians[k][h,i,j] * cross_products[k][h]
+        for k, m in itertools.product(range(n_func), repeat=2):
+          if k == m: continue
+          result[h,i,j] += gradients[k][h,j] * gradients[m][h,i] * cross_products2[k,m][h]
+    return result
+
+  def _cross_evals(self, x, k):
+    evals  = [np.asarray(f(x)) for f in self.functions]
+    prod   = np.prod(evals, axis=0)
+    n_func = len(self.functions)
+    m      = len(np.asarray(evals[0]))
+    result = np.zeros( [n_func]*k + [m] )
+    for idx in itertools.product(range(n_func), repeat=k):
+      result[idx] = prod / np.prod([evals[i] for i in idx], axis=0)
+    return np.nan_to_num(result)
+
 
 
 class Composition(Function):
