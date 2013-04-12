@@ -18,24 +18,22 @@ class ConjugateGradient(Optimizer):
 
     iteration = 0
     x = x0
-    previous_gradient = 0
-    previous_direction = 0
+    previous_gradient = np.zeros(x.shape)
+    previous_direction = np.zeros(x.shape)
     n_dim = len(x)
 
     while True:
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
         break
       else:
-        if iteration % n_dim == 0:
-          previous_direction = previous_gradient = np.zeros(n_dim)
-
         gradient = objective.gradient(x)
         if float(gradient.dot(previous_gradient)) > 0:
           # fletcher-reeves
-          b = gradient.dot(gradient) / (gradient.dot(previous_gradient))
+          b = gradient.dot(gradient) / (previous_gradient.dot(previous_gradient))
+          b = max(b, 0)
         else:
           b = 0.0
-        direction = -1 * (gradient + b * previous_direction)
+        direction = -gradient + b * previous_direction
         eta = self.learning_rate(iteration=iteration, x=x,
             direction=direction, **kwargs)
 
