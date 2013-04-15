@@ -12,7 +12,7 @@ class ADMM(Optimizer):
 
     min_{x} f(x) + g(x)
 
-  for f and g such that prox_{eta f}(.) is efficient.
+  for f and g such that prox_{eta f}(.)  and prox_{eta g}(.) is efficient.
   """
 
   def optimize(self, objective, x0):

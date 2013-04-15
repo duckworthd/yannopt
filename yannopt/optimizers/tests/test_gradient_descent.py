@@ -24,6 +24,7 @@ def test_gradient_descent():
       problems.quadratic_program1(),
       problems.lasso(),
       problems.logistic_regression(),
+      problems.l2_penalized_logistic_regression(),
   ]
   optimizer = Optimizer(300)
   for solution in solutions:

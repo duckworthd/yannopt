@@ -20,6 +20,16 @@ class Prox(object):
     raise NotImplementedError("Prox function not implemented")
 
 
+class Conjugate(object):
+  """A function whose Fenchel conjugate can be computed easily
+
+    f^{*}(y) = \sup_{x} y^T x - f(y)
+  """
+
+  @property
+  def conjugate(self):
+    raise NotImplementedError("Conjugate function not implemented")
+
 ################################## Classes #####################################
 class LogisticLoss(Function):
   """Logistic Regression loss function
@@ -92,7 +102,7 @@ class HingeLoss(Function):
     return np.sum(((losses > 0) * y)[:, np.newaxis] * X, axis=0)
 
 
-class Quadratic(Prox, Function):
+class Quadratic(Prox, Conjugate, Function):
   """Quadratic function
 
   0.5 x'Ax + b'x + c
@@ -129,6 +139,14 @@ class Quadratic(Prox, Function):
     A, b = self.A, self.b
     n = len(x)
     return np.linalg.lstsq(np.eye(n) + eta * A, x - eta * b)[0]
+
+  @property
+  def conjugate(self):
+    A, b, c = self.A, self.b, self.c
+    A2 = np.linalg.pinv(A)
+    b2 = -A2.dot(b)
+    c2 = 0.5 * b.dot(A2).dot(b) - c
+    return Quadratic(A2, b2, c2)
 
 
 class Affine(Function):
