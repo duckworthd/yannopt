@@ -1,5 +1,5 @@
 """
-(Stochastic) (Sub)Gradient Descent
+Mirror Descent
 """
 import numpy as np
 
@@ -41,9 +41,10 @@ class MirrorDescent(Optimizer):
         #   w^{t+1}       = \argmax{w} <w, (1/t) \theta^{t+1}> - g(w)
         #                 = gradient[g^{*}]( (1/t) \theta^{t+1} )
 
+        t     = iteration
         z     = f.gradient(w)
-        theta -= z
-        w     = g_dual.gradient(theta * 1.0/(iteration+1))
+        theta = (t/(t+1.0)) * theta + (1.0/(t+1.0)) * z
+        w     = g_dual.gradient(-theta)
 
         iteration += 1
         sol.scores.append(objective(w))

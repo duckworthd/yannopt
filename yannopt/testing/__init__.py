@@ -6,6 +6,7 @@ def check_optimizer(optimize, solution, tol=1e-2):
 
   # swap Optimizer object with a method that takes a solution
   if isinstance(optimize, Optimizer):
+    #import ipdb; ipdb.set_trace()
     optimize = default_optimize(optimize)
 
   # find optimizer's solution and check it against truth

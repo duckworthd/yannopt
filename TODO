@@ -1,22 +1,18 @@
 Functions
 =========
 * Implement function composition
-  - addition
-  - multiplication (scalar)
   - affine transformation
+- implement interface for Mirror Descent-type methods that require minimizing a
+  regularizer, a prox-function, and a linear term
 
 Optimizers
 ==========
+- fix mirror descent
 - implement steepest descent method
-- Implement (L-)BFGS
 - Implement primal-dual interior point solver
 - implement primal-dual subgradient descent
 - implement projection onto linear constraints
-- implement mirror descent
 - implement Conditional Gradient Descent (aka Frank-Wolfe)
-* double check that conjugate gradient is working. Shouldn't it converge
-  exactly for quadratic problems when the number of iterations = dimension of
-  problem?
 
 Testing
 =======
@@ -49,4 +45,3 @@ General
 
   where <algorithm> is initialized with all algorithm-specific parameters
 - implement Lagrangian from problem definition
-- deal with multiplication, addition of functions
