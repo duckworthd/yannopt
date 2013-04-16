@@ -2,5 +2,37 @@
 yannopt
 =======
 
-Optimization algorithms inspired by Yann LeCunn and John Langford's class at
-NYU in Spring 2013.
+Optimization algorithms. Lots of them.
+
+========
+Examples
+========
+
+    >>> from yannopt.optimizers import LBFGS
+    >>> from yannopt.learning_rates import BacktrackingLineSearch
+    >>> from yannopt.stopping_criteria import MaxIterations
+    >>> from yannopt.testing import check_optimizer
+    >>> from yannopt.testing import problems
+    >>> 
+    >>> 
+    >>> class Optimizer(BacktrackingLineSearch, MaxIterations, LBFGS):
+    >>>   def __init__(self, n_iter):
+    >>>     BacktrackingLineSearch.__init__(self, a=0.5)
+    >>>     MaxIterations.__init__(self, n_iter)
+    >>>     LBFGS.__init__(self, k=2)
+    >>> 
+    >>> # Define objective function
+    >>> A = np.array([[1.0, 0.5, 0.0],
+    >>>               [0.5, 1.0, 0.5],
+    >>>               [0.0, 0.5, 1.0]])
+    >>> b = np.array([1.0, 2.0, 3.0])
+    >>> objective = f.Quadratic(A, b)
+    >>> 
+    >>> # Define problem (objective + constraints)
+    >>> problem   = minimize(objective)
+    >>> x0        = np.zeros(len(b))
+    >>>
+    >>> # Optimize!
+    >>> optimizer = Optimizer(20)
+    >>> solution  = optimizer.optimize(problem, x0)
+    >>> print 'The minimizer of f(x) = 0.5 x'Ax - b is %s'.format(solution.x)
