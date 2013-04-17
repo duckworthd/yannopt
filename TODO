@@ -2,12 +2,11 @@ Functions
 =========
 * Implement function composition
   - affine transformation
-- implement interface for Mirror Descent-type methods that require minimizing a
-  regularizer, a prox-function, and a linear term
+- implement interface for Regularized Mirror Descent-type methods that require
+  minimizing a regularizer, a prox-function, and a linear term
 
 Optimizers
 ==========
-- fix mirror descent
 - implement steepest descent method
 - Implement primal-dual interior point solver
 - implement primal-dual subgradient descent

@@ -2,7 +2,8 @@
 yannopt
 =======
 
-Optimization algorithms. Lots of them.
+Optimization algorithms. Lots of them. This is a work in progress -- use at
+your own risk of numerical underflow.
 
 ========
 Examples

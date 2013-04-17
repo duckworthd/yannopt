@@ -67,22 +67,7 @@ def logistic_regression():
   objective = f.LogisticLoss(A, b)
 
   problem   = minimize(objective)
-  solution  = np.array([ 151.62104877, -278.68114839,  -71.81346763])
-  initial   = np.ones(3)
-
-  return Solution(problem=problem, x=solution, x0=initial, name='logistic_regression')
-
-
-def logistic_regression2():
-  A = np.array([[1.0,-0.5, 0.5],
-                [0.2, 0.5,-1.0],
-                [0.2, 0.5,-2.0],
-                [0.8, 0.3, 0.0]])
-  b = np.array([1.0, 0.0, 1.0, 1.0])
-  objective = f.LogisticLoss(A, b)
-
-  problem   = minimize(objective)
-  solution  = np.array([ 151.62104877, -278.68114839,  -71.81346763])
+  solution  = np.array([ 33.90304962, -60.30671638, -15.79854714 ])
   initial   = np.ones(3)
 
   return Solution(problem=problem, x=solution, x0=initial, name='logistic_regression')
@@ -93,16 +78,12 @@ def l2_penalized_logistic_regression():
                 [0.2, 0.5,-1.0]])
   b = np.array([1.0,-1.0])
 
-  Q = A.T.dot(A)
-  c = -1 * A.T.dot(b)
-  d = 0.5 * b.dot(b)
-
-  error = f.Quadratic(10 * Q, 10 * c, 10 * d)
+  error = f.LogisticLoss(A, b)
   regularization = f.SquaredL2Norm(n=3)
   objective = f.Addition([error, regularization])
 
   problem   = minimize(objective)
-  solution  = np.array([ 0.32786887, -0.49180321,  0.76502736])
+  solution  = np.array([ 0.03012302, -0.71226521,  1.2932683 ])
   initial   = np.ones(3) * 10
 
-  return Solution(problem=problem, x=solution, x0=initial, name='lasso')
+  return Solution(problem=problem, x=solution, x0=initial, name='l2_penalized_logistic_regression')
