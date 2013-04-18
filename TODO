@@ -9,13 +9,13 @@ Optimizers
 ==========
 - implement steepest descent method
 - Implement primal-dual interior point solver
-- implement primal-dual subgradient descent
-- implement projection onto linear constraints
+- implement primal-dual subgradient descent (or maybe Augmented Lagrangian method?)
 - implement Conditional Gradient Descent (aka Frank-Wolfe)
 
 Testing
 =======
 - implement an example that uses general constraints
+- implement an example that uses a ton of function composition.
 
 Constraints
 ===========
@@ -29,7 +29,6 @@ Stopping Criteria
 
 Learning Rates
 ==============
-- implement Polyak step size
 - implement ADMM step size scheme (ADMM paper, page 20)
 
 General

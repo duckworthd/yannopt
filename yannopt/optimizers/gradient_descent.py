@@ -14,7 +14,8 @@ class SubgradientDescent(Optimizer):
     }
     sol = Solution(problem=objective, x0=x0)
     iteration = 0
-    x = x0
+    x_best = x = x0
+    score_best = objective(x)
 
     while True:
       if self.stopping_criterion(iteration=iteration, x=x, **kwargs):
@@ -25,9 +26,14 @@ class SubgradientDescent(Optimizer):
             direction=direction, **kwargs)
         x  += eta * direction
         iteration += 1
-        sol.scores.append(objective(x))
+        score = objective(x)
+        sol.scores.append(score)
 
-    sol.x = x
+        if score < score_best:
+          x_best = x.copy()
+          score_best = score
+
+    sol.x = x_best
     return sol
 
 

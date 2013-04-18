@@ -7,7 +7,7 @@ from yannopt.testing import problems
 
 class Optimizer(BacktrackingLineSearch, MaxIterations, SubgradientDescent):
   def __init__(self, n_iter):
-    BacktrackingLineSearch.__init__(self, a=0.5, t=100.0)
+    BacktrackingLineSearch.__init__(self, a=0.5, t=100.0, save_step_size=False)
     MaxIterations.__init__(self, n_iter)
     SubgradientDescent.__init__(self)
 
@@ -26,9 +26,8 @@ def test_gradient_descent():
       problems.logistic_regression(),
       problems.l2_penalized_logistic_regression(),
   ]
-  optimizer = Optimizer(300)
   for solution in solutions:
-    yield check_optimizer, optimizer, solution
+    yield check_optimizer, Optimizer(500), solution
 
 
 def test_accelerated_gradient_descent():
@@ -36,8 +35,5 @@ def test_accelerated_gradient_descent():
       problems.quadratic_program1(),
       problems.logistic_regression(),
   ]
-  def optimizer(solution):
-    optimizer = Optimizer2(200)
-    return optimizer.optimize(solution.problem, solution.x0)
   for solution in solutions:
-    yield check_optimizer, optimizer, solution
+    yield check_optimizer, Optimizer2(200), solution

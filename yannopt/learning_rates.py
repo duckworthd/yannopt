@@ -103,3 +103,49 @@ class _ProximalBacktrackingLineSearch(LearningRate):
           self.t = t
         return t
       t = self.b * t
+
+
+class PolyakStepSize(object):
+  def __init__(self, *args, **kwargs):
+    self.learning_rate = _PolyakStepSize(*args, **kwargs)
+
+
+class _PolyakStepSize(LearningRate):
+  """Approximate Polyak Step Size
+
+  The true Polyak step size, assuming f(x*) is known, is
+
+    ( f(x) - f(x*) )/||\nabla f(x)||_2^2
+
+  When f(x*) isn't known, the following still works,
+
+    (f(x_t) - min_{i<=t}[f(x_i)] + gamma_t) / ||\nabla f(x_t)||_2^2
+
+  When gamma_t = a/(b+iter)^p is non-summable but square-summable. The latter is
+  implemented here. To imitate the former, specify f_min and set a = 0.0
+
+  Parameters
+  ----------
+  a : float
+      numerator of gamma_t
+  b : float
+      offset in denominator of gamma_t
+  p : float
+      power in the denominator of gamma_t
+  f_min : float
+      greater than or equal to f(x*)
+  """
+
+  def __init__(self, a=1.0, b=1.0, p=1.0, f_min=np.inf):
+    self.a = a
+    self.b = b
+    self.p = p
+    self.f_min = f_min
+
+  def learning_rate(self, x, direction, objective, iteration, **kwargs):
+    a, b, p = self.a, self.b, self.p
+    f_min = min(objective(x), self.f_min)
+    gamma = a / ((b + iteration) ** p)
+    alpha = (objective(x) - f_min + gamma) / (np.linalg.norm(direction) ** 2)
+    self.f_min = f_min
+    return alpha
