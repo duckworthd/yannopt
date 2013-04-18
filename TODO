@@ -29,7 +29,6 @@ Stopping Criteria
 
 Learning Rates
 ==============
-- implement ADMM step size scheme (ADMM paper, page 20)
 
 General
 =======

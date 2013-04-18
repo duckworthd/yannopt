@@ -136,6 +136,10 @@ class Quadratic(Prox, Conjugate, Function):
     return np.linalg.solve(A, -b)
 
   def prox(self, x, eta):
+    # argmin_{y} 0.5 y'Ay + b'y + c + 0.5/eta ||y-x||_2^2
+    # -> Ay + b + (1/eta)(y-x) = 0
+    # -> (A + (1/eta)I) y = (1/eta)x - b
+    # -> (eta A - I) y = x - eta b
     A, b = self.A, self.b
     n = len(x)
     return np.linalg.lstsq(np.eye(n) + eta * A, x - eta * b)[0]
@@ -194,6 +198,7 @@ class Constant(Prox, Function):
     return np.zeros((n,n))
 
   def prox(self, x, eta):
+    # argmin_{y} c + 0.5/eta ||y - x||_2^2
     return x
 
 
@@ -395,6 +400,8 @@ class L1Norm(Prox, Function):
     raise NotImplementedError("Hessian not defined")
 
   def prox(self, x, eta):
+    # argmin_{y} eta ||y||_1 + 0.5 ||y-x||_2^2
+    # -> 0 \in eta (d/dy)||y||_1 + y - x
     return np.maximum(x - eta, 0) - np.maximum(-x - eta, 0)
 
 
