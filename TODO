@@ -4,9 +4,12 @@ Functions
   - affine transformation
 - implement interface for Regularized Mirror Descent-type methods that require
   minimizing a regularizer, a prox-function, and a linear term
+- implement negative entropy regularizer (\sum_{i} p_i log p_i)
+- implement L2 norm, L_inf norm
 
 Optimizers
 ==========
+- implement Exponentiated Gradient Descent via Mirror Descent
 - implement steepest descent method
 - Implement primal-dual interior point solver
 - implement primal-dual subgradient descent (or maybe Augmented Lagrangian method?)
